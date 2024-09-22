@@ -2,10 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/model/repository/authentication_repository.dart';
+import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:las_customer/presentation/page/map.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
-class OrderPage extends StatelessWidget {
+class OrderPage extends StatefulWidget {
+  @override
+  _OrderPageState createState() => _OrderPageState();
+}
+
+class _OrderPageState extends State<OrderPage> {
+  late bool _showPaymentMethod = false;
+  List<bool> selectedSmartTrash = [false, false, false, false, false];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,7 +35,6 @@ class OrderPage extends StatelessWidget {
           children: [
             Column(
               children: [
-                //pick location
                 SizedBox(
                   height: 20,
                 ),
@@ -44,7 +52,7 @@ class OrderPage extends StatelessWidget {
                     onTap: () {
                       PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        screen: MapPage(),
+                        screen: MapPage(toDo: 'PICK_LOCATION'),
                         withNavBar: false,
                       );
                     },
@@ -62,7 +70,23 @@ class OrderPage extends StatelessWidget {
                         SizedBox(
                           width: 10,
                         ),
-                        Text('Pilih lokasi'),
+                        BlocBuilder<MapBloc, MapState>(
+                          builder: (context, state) {
+                            if (state is MapPositionUpdate) {
+                              return Flexible(
+                                child: Text(
+                                  state.position.toString(),
+                                  style: Theme.of(context).textTheme.bodyLarge,
+                                ),
+                              );
+                            } else {
+                              return Text(
+                                'Lokasi Anda',
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              );
+                            }
+                          },
+                        ),
                         SizedBox(
                           height: 10,
                         ),
@@ -75,7 +99,6 @@ class OrderPage extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-
                 Expanded(
                   // height: 130,
                   child: Padding(
@@ -94,31 +117,32 @@ class OrderPage extends StatelessWidget {
                             mainAxisSpacing: 10,
                           ),
                           itemBuilder: (context, index) {
-                            return Container(
-                              height: 50,
-                              width: 50,
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Colors.grey,
+                            return GestureDetector(
+                              onTap: () => setState(() {
+                                selectedSmartTrash[index] =
+                                    !selectedSmartTrash[index];
+                              }),
+                              child: Container(
+                                height: 50,
+                                width: 50,
+                                decoration: BoxDecoration(
+                                  border: selectedSmartTrash[index]
+                                      ? Border.all(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .primary,
+                                          width: 2)
+                                      : Border.all(
+                                          color: Colors.grey,
+                                        ),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                borderRadius: BorderRadius.circular(10),
-                                color: //colors with gradient
-                                    index == 0
-                                        ? Colors.red
-                                        : index == 1
-                                            ? Colors.green
-                                            : index == 2
-                                                ? Colors.blue
-                                                : index == 3
-                                                    ? Colors.yellow
-                                                    : index == 4
-                                                        ? Colors.purple
-                                                        : Colors.white,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '1',
-                                  style: TextStyle(color: Colors.white),
+                                child: Container(
+                                  padding: EdgeInsets.all(2),
+                                  child: Image.network(
+                                    'https://img.freepik.com/free-vector/round-leaves-organic-circle_78370-2370.jpg',
+                                    fit: BoxFit.contain,
+                                  ),
                                 ),
                               ),
                             );
@@ -127,80 +151,141 @@ class OrderPage extends StatelessWidget {
                         SizedBox(
                           height: 20,
                         ),
-                        Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey,
+                        InkWell(
+                          onTap: () {
+                            setState(() {
+                              _showPaymentMethod = !_showPaymentMethod;
+                            });
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(15),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.grey,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Icon(Icons.money),
-                              // SizedBox(
-                              //   width: 5,
-                              // ),
-                              // Text(
-                              //   'TUNAI',
-                              //   style: Theme.of(context)
-                              //       .textTheme
-                              //       .bodyLarge
-                              //       ?.copyWith(fontWeight: FontWeight.bold),
-                              // ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Icon(Icons.money),
+                                // SizedBox(
+                                //   width: 5,
+                                // ),
+                                // Text(
+                                //   'TUNAI',
+                                //   style: Theme.of(context)
+                                //       .textTheme
+                                //       .bodyLarge
+                                //       ?.copyWith(fontWeight: FontWeight.bold),
+                                // ),
 
-                              Image.network(
-                                'https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png',
-                                width: 100,
-                                //fit
-                                fit: BoxFit.fitWidth,
-                              )
-                            ],
+                                Image.network(
+                                  'https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png',
+                                  width: 100,
+                                  //fit
+                                  fit: BoxFit.fitWidth,
+                                )
+                              ],
+                            ),
                           ),
                         ),
                         SizedBox(
                           height: 20,
                         ),
                         //map container with border
-
-                        //irch text ada 5 Kru LAS terdekat
-                        RichText(
-                          text: TextSpan(
-                            text: 'Ada ', // First part of the sentence
-                            style: DefaultTextStyle.of(context)
-                                .style, // Default style
-                            children: <TextSpan>[
-                              TextSpan(
-                                text: '5', // Number part
-                                style: TextStyle(
-                                  fontWeight: FontWeight
-                                      .bold, // Bold style for emphasis
-                                  color: Colors.red, // Change color to red
-                                ),
-                              ),
-                              TextSpan(
-                                text:
-                                    ' Kru LAS terdekat', // Rest of the sentence
-                              ),
-                            ],
-                          ),
-                        ),
-
+                        //price calculation overview
                         Container(
-                          height: 200,
-                          width: MediaQuery.of(context).size.width,
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: Colors.grey,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Image.network(
-                            'https://upload.wikimedia.org/wikipedia/en/thumb/5/56/Google_maps_screenshot.png/300px-Google_maps_screenshot.png',
-                            fit: BoxFit.fill,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Ringkasan Angkutan',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .headlineSmall
+                                    ?.copyWith(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+
+                              //organic trash 2kg price
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween, //space evenly
+                                children: [
+                                  Text('Sampah Organik 2kg'),
+                                  Text('Rp. 2.000'),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween, //space evenly
+                                children: [
+                                  Text('Sampah Anorganik 2kg'),
+                                  Text('Rp. 3.000'),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween, //space evenly
+                                children: [
+                                  Text('Sampah B3 2kg'),
+                                  Text('Rp. 5.000'),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              //line separator dot
+                              Container(
+                                height: 1,
+                                width: double.infinity,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween, //space evenly
+                                children: [
+                                  Text('Biaya pembuangan'),
+                                  Text('Rp. 10.000'),
+                                ],
+                              ),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment
+                                    .spaceBetween, //space evenly
+                                children: [
+                                  Text('Total Bayar'),
+                                  Text('Rp. 20.000'),
+                                ],
+                              ),
+                            ],
                           ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -219,7 +304,7 @@ class OrderPage extends StatelessWidget {
                     //push and remove all prev routes
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
-                      screen: MapPage(),
+                      screen: MapPage(toDo: 'ORDER'),
                       withNavBar: false,
                     );
                   },
@@ -238,113 +323,109 @@ class OrderPage extends StatelessWidget {
             ),
 
             //panel to select payment method
-            // Positioned(
-            //   bottom: 0,
-            //   child: Container(
-            //     width: MediaQuery.of(context).size.width,
-            //     height: MediaQuery.of(context).size.height * 0.6,
-            //     decoration: BoxDecoration(
-            //       color: Theme.of(context).colorScheme.surface,
-            //       //border radius top right and left top
-            //       borderRadius: BorderRadius.only(
-            //         topLeft: Radius.circular(20),
-            //         topRight: Radius.circular(20),
-            //       ),
-            //       //border grey
-            //       border: Border.all(
-            //         color: Colors.grey,
-            //       ),
-            //     ),
-            //     child: Container(
-            //       padding: EdgeInsets.all(30),
-            //       child: Column(
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: [
-            //           Text(
-            //             "PILIH METODE PEMBAYARAN",
-            //             style: Theme.of(context)
-            //                 .textTheme
-            //                 .headlineSmall
-            //                 ?.copyWith(fontWeight: FontWeight.bold),
-            //           ),
-            //           SizedBox(
-            //             height: 20,
-            //           ),
-            //           //select payment method
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Image.network(
-            //                 'https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png',
-            //                 width: 100,
-            //               ),
-            //               ElevatedButton(
-            //                 onPressed: () {},
-            //                 style: ElevatedButton.styleFrom(),
-            //                 child: Text('Pilih'),
-            //               )
-            //             ],
-            //           ),
-            //           SizedBox(
-            //             height: 20,
-            //           ),
-            //           //select payment method
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Image.network(
-            //                 'https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png',
-            //                 width: 100,
-            //               ),
-            //               ElevatedButton(
-            //                 onPressed: () {},
-            //                 style: ElevatedButton.styleFrom(),
-            //                 child: Text('Pilih'),
-            //               )
-            //             ],
-            //           ),
-            //           SizedBox(
-            //             height: 20,
-            //           ),
-            //           //select payment method
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Image.network(
-            //                 'https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png',
-            //                 width: 100,
-            //               ),
-            //               ElevatedButton(
-            //                 onPressed: () {},
-            //                 style: ElevatedButton.styleFrom(),
-            //                 child: Text('Pilih'),
-            //               )
-            //             ],
-            //           ),
-            //           SizedBox(
-            //             height: 20,
-            //           ),
-            //           //select payment method
-            //           Row(
-            //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //             children: [
-            //               Image.network(
-            //                 'https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png',
-            //                 width: 100,
-            //               ),
-            //               ElevatedButton(
-            //                 onPressed: () {},
-            //                 style: ElevatedButton.styleFrom(),
-            //                 child: Text('Pilih'),
-            //               )
-            //             ],
-            //           )
-            //         ],
-            //       ),
-            //     ),
-            //   ),
-            // )
+            if (_showPaymentMethod) _buildPaymentMethodPanel(),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPaymentMethodPanel() {
+    return Positioned(
+      bottom: 0,
+      child: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height * 0.6,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          //border radius top right and left top
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          //border grey
+          border: Border.all(
+            color: Colors.grey,
+          ),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(30),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "PILIH METODE PEMBAYARAN",
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  //close icon button
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _showPaymentMethod = false;
+                      });
+                    },
+                    icon: Icon(Icons.close),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              //select payment method
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.money,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      Text(
+                        'TUNAI',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(),
+                    child: Text('Pilih'),
+                  )
+                ],
+              ),
+              SizedBox(
+                height: 20,
+              ),
+              //select payment method
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Image.network(
+                    'https://antinomi.org/wp-content/uploads/2022/03/logo-gopay-vector.png',
+                    width: 100,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(),
+                    child: Text('Pilih'),
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

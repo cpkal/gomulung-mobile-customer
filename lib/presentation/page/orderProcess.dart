@@ -16,7 +16,7 @@ class OrderProcessPage extends StatelessWidget {
             onTap: () {
               PersistentNavBarNavigator.pushNewScreen(
                 context,
-                screen: MapPage(),
+                screen: MapPage(toDo: 'ORDER'),
                 withNavBar: false,
               );
             },

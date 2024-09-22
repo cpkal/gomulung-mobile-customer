@@ -7,6 +7,7 @@ import 'package:las_customer/model/repository/authentication_repository.dart';
 import 'package:las_customer/model/repository/user.dart';
 import 'package:las_customer/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:las_customer/presentation/bloc/login/login_bloc.dart';
+import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:las_customer/presentation/bloc/register/register_bloc.dart';
 
 void main() {
@@ -46,6 +47,7 @@ class MyApp extends StatelessWidget {
                   RepositoryProvider.of<CustomerRepository>(context),
             ),
           ),
+          BlocProvider(create: (context) => MapBloc()),
         ],
         child: MaterialApp(
           title: 'LAS Customer Application',

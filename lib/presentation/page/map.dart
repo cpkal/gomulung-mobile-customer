@@ -1,14 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:las_customer/core/route/route_paths.dart';
+import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatefulWidget {
+  final String toDo; // The argument you want to pass
+
+  // Constructor to accept the argument
+  MapPage({Key? key, required this.toDo}) : super(key: key);
+
   @override
   _MapPageState createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> {
+  MapController mapController = MapController();
+
+  bool isLASCrewFound = false;
+
+  @override
+  void initState() {
+    //timeout 3 seconds until las crew found
+    Future.delayed(Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          isLASCrewFound = true;
+        });
+      }
+    });
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,33 +62,161 @@ class _MapPageState extends State<MapPage> {
             ),
           ),
           centerTitle: true,
-          title: Container(
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(200),
-            ),
-            child: Text('Sedang mencari kru LAS'),
-          ), // Custom title
+          title: widget.toDo == 'ORDER'
+              ? Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(200),
+                  ),
+                  child: isLASCrewFound
+                      ? Text('Kru LAS ditemukan')
+                      : Text('Sedang mencari kru LAS'),
+                )
+              : Container(), //, //  Custom title
           titleTextStyle: Theme.of(context).textTheme.headlineSmall),
       //map
-      body: Stack(
-        children: [
-          FlutterMap(
-            options: MapOptions(
-              initialZoom: 18,
-              initialCenter: LatLng(-6.1753924, 106.8271528),
-            ),
-            children: [
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                subdomains: const ['a', 'b', 'c'],
-              ),
-            ],
+      body: BlocProvider(
+        create: (context) => MapBloc(),
+        child: BlocConsumer<MapBloc, MapState>(
+          listener: (context, state) {
+            if (state is MapPositionUpdate) {
+              mapController.move(
+                  LatLng(state.position.latitude, state.position.longitude),
+                  18);
+            }
+          },
+          builder: (context, state) {
+            return Stack(
+              children: [
+                FlutterMap(
+                  mapController: mapController,
+                  options: MapOptions(
+                    onPositionChanged: (position, hasGesture) {
+                      context.read<MapBloc>().add(MapPositionChanged(Position(
+                          latitude: position.center.latitude,
+                          longitude: position.center.longitude,
+                          timestamp: DateTime.now(),
+                          accuracy: 0.0,
+                          altitude: 0.0,
+                          altitudeAccuracy: 0.0,
+                          heading: 0.0,
+                          headingAccuracy: 0.0,
+                          speed: 0.0,
+                          speedAccuracy: 0.0)));
+                    },
+                    initialZoom: 18,
+                    initialCenter: state is MapPositionUpdate
+                        ? LatLng(
+                            state.position.latitude, state.position.longitude)
+                        : LatLng(-6.1753924, 106.8271528),
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      subdomains: const ['a', 'b', 'c'],
+                    ),
+                  ],
+                ),
+                //center marker
+                widget.toDo == 'PICK_LOCATION'
+                    ? Center(
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                          size: 50,
+                        ),
+                      )
+                    : Container(),
+
+                //zoom in, zoom out, and my location button
+                // Positioned(
+                //   bottom: MediaQuery.of(context).size.height * 0.1 + 20,
+                //   right: 20,
+                //   child: Column(
+                //     children: [
+                //       ElevatedButton(
+                //         onPressed: () {
+                //           if (state is MapPositionUpdate) {
+                //             mapController.move(
+                //                 LatLng(state.position.latitude,
+                //                     state.position.longitude),
+                //                 18 + 1);
+                //           }
+                //         },
+                //         child: Icon(Icons.add),
+                //       ),
+                //       SizedBox(height: 10),
+                //       ElevatedButton(
+                //         onPressed: () {
+                //           if (state is MapPositionUpdate) {
+                //             mapController.move(
+                //                 LatLng(state.position.latitude,
+                //                     state.position.longitude),
+                //                 18 - 1);
+                //           }
+                //         },
+                //         child: Icon(Icons.remove),
+                //       ),
+                //       SizedBox(height: 10),
+                //       ElevatedButton(
+                //         onPressed: () {},
+                //         child: Icon(Icons.my_location),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                widget.toDo == 'PICK_LOCATION'
+                    ? _buildPanelPickMapLocation(state)
+                    : isLASCrewFound
+                        ? _buildPanelOnOrderProcess()
+                        : _buildPanelCancelOrder(),
+                // _buildPanelOnOrderProcess()
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPanelPickMapLocation(state) {
+    return Positioned(
+      bottom: 0,
+      child: Container(
+        height: MediaQuery.of(context).size.height * 0.1,
+        width: MediaQuery.of(context).size.width,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
           ),
-          // _buildPanelCancelOrder(),
-          _buildPanelOnOrderProcess()
-        ],
+        ),
+        child: Center(
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(),
+            onPressed: () {
+              if (state is MapPositionUpdate) {
+                context.read<MapBloc>().add(MapPositionPicked(Position(
+                    latitude: state.position.latitude,
+                    longitude: state.position.longitude,
+                    timestamp: DateTime.now(),
+                    accuracy: 0.0,
+                    altitude: 0.0,
+                    altitudeAccuracy: 0.0,
+                    heading: 0.0,
+                    headingAccuracy: 0.0,
+                    speed: 0.0,
+                    speedAccuracy: 0.0)));
+              }
+
+              Navigator.of(context).pop();
+            },
+            child: Text('Pilih Lokasi'),
+          ),
+        ),
       ),
     );
   }
@@ -164,6 +322,9 @@ class _MapPageState extends State<MapPage> {
                       padding: EdgeInsets.all(20),
                     ),
                   ),
+                  SizedBox(
+                    width: 10,
+                  ),
                   Container(
                     //border grey
                     decoration: BoxDecoration(
@@ -181,6 +342,7 @@ class _MapPageState extends State<MapPage> {
                       padding: EdgeInsets.all(20),
                     ),
                   ),
+                  SizedBox(width: 10),
                   Container(
                     //border grey
                     decoration: BoxDecoration(

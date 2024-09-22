@@ -10,13 +10,17 @@ class RegisterSelectRolePage extends StatefulWidget {
 }
 
 class _RegisterSelectRolePageState extends State<RegisterSelectRolePage> {
-  int? selectedOption; // Keep track of selected card
+  String? selectedOption; // Keep track of selected card
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: BlocBuilder<RegisterBloc, RegisterState>(
         builder: (context, state) {
+          if (state is RegisterState) {
+            selectedOption = state.serviceType;
+          }
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -63,7 +67,8 @@ class _RegisterSelectRolePageState extends State<RegisterSelectRolePage> {
                             decoration: BoxDecoration(
                               border: Border.all(
                                 width: 2,
-                                color: selectedOption == 1
+                                color: selectedOption ==
+                                        RegisterConstant.SERVICE_HOME
                                     ? Theme.of(context).colorScheme.primary
                                     : Colors.grey.shade300,
                               ),
@@ -109,7 +114,8 @@ class _RegisterSelectRolePageState extends State<RegisterSelectRolePage> {
                             decoration: BoxDecoration(
                               border: Border.all(
                                 width: 2,
-                                color: selectedOption == 2
+                                color: selectedOption ==
+                                        RegisterConstant.SERVICE_INDUSTRY
                                     ? Theme.of(context).colorScheme.primary
                                     : Colors.grey.shade300,
                               ),
@@ -121,7 +127,7 @@ class _RegisterSelectRolePageState extends State<RegisterSelectRolePage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    "Industri",
+                                    "Bisnis",
                                     style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold),

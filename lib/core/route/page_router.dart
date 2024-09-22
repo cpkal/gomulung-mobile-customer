@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/presentation/page/ask_login_register.dart';
 import 'package:las_customer/presentation/page/chat.dart';
+import 'package:las_customer/presentation/page/forgot_password.dart';
 import 'package:las_customer/presentation/page/login.dart';
 import 'package:las_customer/presentation/page/map.dart';
 import 'package:las_customer/presentation/page/order.dart';
@@ -30,9 +31,11 @@ class PageRouter {
       case RoutePaths.subRoot:
         return MaterialPageRoute(builder: (_) => SubRootPage());
       case RoutePaths.map:
-        return MaterialPageRoute(builder: (_) => MapPage());
+        return MaterialPageRoute(builder: (_) => MapPage(toDo: 'DEF'));
       case RoutePaths.chat:
         return MaterialPageRoute(builder: (_) => ChatPage());
+      case RoutePaths.forgotPassword:
+        return MaterialPageRoute(builder: (_) => ForgotPasswordPage());
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

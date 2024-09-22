@@ -4,8 +4,8 @@ ThemeData appTheme() {
   return ThemeData(
     // Define the color scheme with a custom palette
     colorScheme: ColorScheme(
-      primary: Color(0xFF2196F3), // Green (Primary color)
-      secondary: Color.fromARGB(218, 239, 217, 14), // Blue (Secondary color)
+      primary: Color(0xFF285238), // Green (Primary color)
+      secondary: Color(0xFF138A36), // Blue (Secondary color)
       surface: Color(0xFFFFFFFF), // White (Surface color for cards)
       error: Color(0xFFF44336), // Red (For error messages)
       onPrimary: Colors.white, // Text on primary color
@@ -29,7 +29,7 @@ ThemeData appTheme() {
     // Button theme (optional)
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF2196F3), // Button background color
+        backgroundColor: Color(0xFF285238), // Button background color
         foregroundColor: Colors.white, // Button text color
       ),
     ),
@@ -41,7 +41,7 @@ ThemeData appTheme() {
         borderRadius: BorderRadius.circular(100),
       ),
       focusedBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: Color(0xFF2196F3)),
+        borderSide: BorderSide(color: Color(0xFF285238)),
         borderRadius: BorderRadius.circular(100),
       ),
       //smaller padding
