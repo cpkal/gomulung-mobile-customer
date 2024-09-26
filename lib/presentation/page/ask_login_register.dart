@@ -44,7 +44,8 @@ class AskLoginRegisterPage extends StatelessWidget {
                     foregroundColor: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(context, RoutePaths.registerSelectRole);
+                    Navigator.pushNamed(
+                        context, RoutePaths.registerInputAccount);
                   },
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.8,

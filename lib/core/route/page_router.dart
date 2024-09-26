@@ -7,7 +7,6 @@ import 'package:las_customer/presentation/page/login.dart';
 import 'package:las_customer/presentation/page/map.dart';
 import 'package:las_customer/presentation/page/order.dart';
 import 'package:las_customer/presentation/page/register_input_account.dart';
-import 'package:las_customer/presentation/page/register_select_service.dart';
 import 'package:las_customer/presentation/page/register_verify_email.dart';
 import 'package:las_customer/presentation/page/sub_root.dart';
 
@@ -22,8 +21,6 @@ class PageRouter {
         return MaterialPageRoute(builder: (_) => AskLoginRegisterPage());
       case RoutePaths.login:
         return MaterialPageRoute(builder: (_) => LoginPage());
-      case RoutePaths.registerSelectRole:
-        return MaterialPageRoute(builder: (_) => RegisterSelectRolePage());
       case RoutePaths.registerInputAccount:
         return MaterialPageRoute(builder: (_) => RegisterInputAccountPage());
       case RoutePaths.registerVerifyEmail:
