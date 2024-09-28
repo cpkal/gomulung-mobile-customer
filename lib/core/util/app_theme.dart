@@ -47,5 +47,8 @@ ThemeData appTheme() {
       //smaller padding
       contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
     ),
+    iconTheme: IconThemeData(
+      color: Color(0xFF285238),
+    ),
   );
 }

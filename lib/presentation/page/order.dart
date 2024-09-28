@@ -203,7 +203,9 @@ class _OrderPageState extends State<OrderPage> {
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.browse_gallery_rounded),
+                                    Icon(
+                                      Icons.browse_gallery_rounded,
+                                    ),
                                     SizedBox(
                                       width: 10,
                                     ),
@@ -262,7 +264,9 @@ class _OrderPageState extends State<OrderPage> {
                               children: [
                                 Row(
                                   children: [
-                                    Icon(Icons.camera_alt),
+                                    Icon(
+                                      Icons.camera_alt,
+                                    ),
                                     SizedBox(
                                       width: 5,
                                     ),
