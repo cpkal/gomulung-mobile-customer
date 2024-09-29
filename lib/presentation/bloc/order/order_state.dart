@@ -1,10 +1,43 @@
 part of 'order_bloc.dart';
 
-sealed class OrderState extends Equatable {
-  const OrderState();
-  
-  @override
-  List<Object> get props => [];
-}
+final class OrderState extends Equatable {
+  String? weight_type;
+  String? image_path;
+  Map<String, bool>? trash_type = {
+    'Rumahan': false,
+    'Logam': false,
+    'Kertas': false,
+    'Pakaian': false,
+    'Kardus': false,
+    'Lainnya': false,
+  };
+  String? payment_method;
 
-final class OrderInitial extends OrderState {}
+  OrderState(
+      {this.weight_type,
+      this.image_path,
+      this.trash_type,
+      this.payment_method});
+
+  OrderState copyWith({
+    String? weight_type,
+    String? image_path,
+    Map<String, bool>? trash_type,
+    String? payment_method,
+  }) {
+    return OrderState(
+      weight_type: weight_type ?? this.weight_type,
+      image_path: image_path ?? this.image_path,
+      trash_type: trash_type ?? this.trash_type,
+      payment_method: payment_method ?? this.payment_method,
+    );
+  }
+
+  @override
+  List get props => [
+        weight_type,
+        image_path,
+        trash_type,
+        payment_method,
+      ];
+}
