@@ -54,7 +54,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         "long": state.position!.longitude
       },
       'address': 'test address',
-      'trash_type': state.trash_type,
+      'trash_type': 'Rumahan',
       'trash_weight_selection': state.weight_type,
       'trash_photo_path': 'NO IMAGE',
       'payment_method': 'tunai',

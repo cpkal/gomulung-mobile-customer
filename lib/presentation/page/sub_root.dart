@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/data/datasource/remote/web_socket_service.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/map.dart';
@@ -16,50 +17,36 @@ class SubRootPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final webSocketService = WebSocketService('ws://10.0.2.2:3000');
-
-    return BlocProvider(
-      create: (context) => WebsocketBloc(webSocketService),
-      child: BlocBuilder<WebsocketBloc, WebsocketState>(
-        builder: (context, state) {
-          if (state is WebsocketInitial) {
-            print('hi every body');
-          }
-
-          return PersistentTabView(
-            context,
-            controller: _controller,
-            screens: _buildScreens(),
-            items: _navBarsItems(context),
-            handleAndroidBackButtonPress: true, // Default is true.
-            resizeToAvoidBottomInset:
-                true, // This needs to be true if you want to move up the screen on a non-scrollable screen when keyboard appears. Default is true.
-            stateManagement: true, // Default is true.
-            hideNavigationBarWhenKeyboardAppears: true,
-            // popBehaviorOnSelectedNavBarItemPress: PopActionScreensType.all,
-            padding: const EdgeInsets.only(top: 8),
-            backgroundColor: Colors.white,
-            isVisible: true,
-            animationSettings: const NavBarAnimationSettings(
-              navBarItemAnimation: ItemAnimationSettings(
-                // Navigation Bar's items animation properties.
-                duration: Duration(milliseconds: 400),
-                curve: Curves.ease,
-              ),
-              screenTransitionAnimation: ScreenTransitionAnimationSettings(
-                // Screen transition animation on change of selected tab.
-                animateTabTransition: true,
-                duration: Duration(milliseconds: 200),
-                screenTransitionAnimationType:
-                    ScreenTransitionAnimationType.fadeIn,
-              ),
-            ),
-            confineToSafeArea: true,
-            navBarHeight: kBottomNavigationBarHeight,
-            navBarStyle: _navBarStyle,
-          );
-        },
+    return PersistentTabView(
+      context,
+      controller: _controller,
+      screens: _buildScreens(),
+      items: _navBarsItems(context),
+      handleAndroidBackButtonPress: true, // Default is true.
+      resizeToAvoidBottomInset:
+          true, // This needs to be true if you want to move up the screen on a non-scrollable screen when keyboard appears. Default is true.
+      stateManagement: true, // Default is true.
+      hideNavigationBarWhenKeyboardAppears: true,
+      // popBehaviorOnSelectedNavBarItemPress: PopActionScreensType.all,
+      padding: const EdgeInsets.only(top: 8),
+      backgroundColor: Colors.white,
+      isVisible: true,
+      animationSettings: const NavBarAnimationSettings(
+        navBarItemAnimation: ItemAnimationSettings(
+          // Navigation Bar's items animation properties.
+          duration: Duration(milliseconds: 400),
+          curve: Curves.ease,
+        ),
+        screenTransitionAnimation: ScreenTransitionAnimationSettings(
+          // Screen transition animation on change of selected tab.
+          animateTabTransition: true,
+          duration: Duration(milliseconds: 200),
+          screenTransitionAnimationType: ScreenTransitionAnimationType.fadeIn,
+        ),
       ),
+      confineToSafeArea: true,
+      navBarHeight: kBottomNavigationBarHeight,
+      navBarStyle: _navBarStyle,
     );
   }
 }

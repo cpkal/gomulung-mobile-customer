@@ -8,20 +8,17 @@ import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:latlong2/latlong.dart';
 
-class MapPage extends StatefulWidget {
-  final String toDo; // The argument you want to pass
-
-  // Constructor to accept the argument
-  MapPage({Key? key, required this.toDo}) : super(key: key);
+class FindDriverPage extends StatefulWidget {
+  FindDriverPage({Key? key}) : super(key: key);
 
   @override
-  _MapPageState createState() => _MapPageState();
+  _FindDriverPageState createState() => _FindDriverPageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _FindDriverPageState extends State<FindDriverPage> {
   MapController mapController = MapController();
 
-  bool isLASCrewFound = false;
+  bool isCrewFound = false;
 
   @override
   void initState() {
@@ -29,7 +26,7 @@ class _MapPageState extends State<MapPage> {
     Future.delayed(Duration(seconds: 5), () {
       if (mounted) {
         setState(() {
-          isLASCrewFound = true;
+          isCrewFound = true;
         });
       }
     });
@@ -45,6 +42,10 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<WebsocketBloc, WebsocketState>(
       builder: (context, state) {
+        if (state is WebsocketConnected) {
+          print('ai hiya');
+        }
+
         return Scaffold(
           extendBodyBehindAppBar: true,
           appBar: AppBar(
@@ -67,18 +68,16 @@ class _MapPageState extends State<MapPage> {
                 ),
               ),
               centerTitle: true,
-              title: widget.toDo == 'ORDER'
-                  ? Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(200),
-                      ),
-                      child: isLASCrewFound
-                          ? Text('Kru LAS ditemukan')
-                          : Text('Sedang mencari kru LAS'),
-                    )
-                  : Container(), //, //  Custom title
+              title: Container(
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.surface,
+                  borderRadius: BorderRadius.circular(200),
+                ),
+                child: isCrewFound
+                    ? Text('Kru LAS ditemukan')
+                    : Text('Sedang mencari kru LAS'),
+              ), //  Custom title
               titleTextStyle: Theme.of(context).textTheme.headlineSmall),
           //map
           body: BlocProvider(
@@ -125,60 +124,9 @@ class _MapPageState extends State<MapPage> {
                         ),
                       ],
                     ),
-                    //center marker
-                    widget.toDo == 'PICK_LOCATION'
-                        ? Center(
-                            child: Icon(
-                              Icons.location_on,
-                              color: Colors.red,
-                              size: 50,
-                            ),
-                          )
-                        : Container(),
-
-                    //zoom in, zoom out, and my location button
-                    // Positioned(
-                    //   bottom: MediaQuery.of(context).size.height * 0.1 + 20,
-                    //   right: 20,
-                    //   child: Column(
-                    //     children: [
-                    //       ElevatedButton(
-                    //         onPressed: () {
-                    //           if (state is MapPositionUpdate) {
-                    //             mapController.move(
-                    //                 LatLng(state.position.latitude,
-                    //                     state.position.longitude),
-                    //                 18 + 1);
-                    //           }
-                    //         },
-                    //         child: Icon(Icons.add),
-                    //       ),
-                    //       SizedBox(height: 10),
-                    //       ElevatedButton(
-                    //         onPressed: () {
-                    //           if (state is MapPositionUpdate) {
-                    //             mapController.move(
-                    //                 LatLng(state.position.latitude,
-                    //                     state.position.longitude),
-                    //                 18 - 1);
-                    //           }
-                    //         },
-                    //         child: Icon(Icons.remove),
-                    //       ),
-                    //       SizedBox(height: 10),
-                    //       ElevatedButton(
-                    //         onPressed: () {},
-                    //         child: Icon(Icons.my_location),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    widget.toDo == 'PICK_LOCATION'
-                        ? _buildPanelPickMapLocation(state)
-                        : isLASCrewFound
-                            ? _buildPanelOnOrderProcess()
-                            : _buildPanelCancelOrder(),
-                    // _buildPanelOnOrderProcess()
+                    isCrewFound
+                        ? _buildPanelOnOrderProcess()
+                        : _buildPanelCancelOrder(),
                   ],
                 );
               },
@@ -186,50 +134,6 @@ class _MapPageState extends State<MapPage> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildPanelPickMapLocation(state) {
-    return Positioned(
-      bottom: 0,
-      child: Container(
-        height: MediaQuery.of(context).size.height * 0.1,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
-        ),
-        child: Center(
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(),
-            onPressed: () {
-              if (state is MapPositionUpdate) {
-                context.read<MapBloc>().add(MapPositionPicked(Position(
-                    latitude: state.position.latitude,
-                    longitude: state.position.longitude,
-                    timestamp: DateTime.now(),
-                    accuracy: 0.0,
-                    altitude: 0.0,
-                    altitudeAccuracy: 0.0,
-                    heading: 0.0,
-                    headingAccuracy: 0.0,
-                    speed: 0.0,
-                    speedAccuracy: 0.0)));
-
-                context.read<OrderBloc>().add(OrderPositionPicked(
-                    position: LatLng(
-                        state.position.latitude, state.position.longitude)));
-              }
-
-              Navigator.of(context).pop();
-            },
-            child: Text('Pilih Lokasi'),
-          ),
-        ),
-      ),
     );
   }
 

@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
+import 'package:las_customer/presentation/page/find_driver.dart';
 import 'package:las_customer/presentation/page/map.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_payment_method_panel.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_total_weight_panel.dart';
@@ -25,6 +27,8 @@ class _OrderPageState extends State<OrderPage> {
   late bool _showPaymentMethod = false;
   late bool _showTotalWeight = false;
 
+  bool _isNavigating = false;
+
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -41,10 +45,7 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void _handleSubmit(BuildContext context) {
-    // context.read<OrderBloc>().add(
-    //       OrderSubmitted(),
-    //     );
-    context.read<WebsocketBloc>().add(WebsocketConnect());
+    context.read<OrderBloc>().add(OrderSubmitted());
   }
 
   @override
@@ -62,95 +63,117 @@ class _OrderPageState extends State<OrderPage> {
         ],
         automaticallyImplyLeading: false,
       ),
-      body: Stack(
-        children: [
-          BlocConsumer<OrderBloc, OrderState>(
-            listener: (context, state) => {
-              if (state is OrderSuccess)
-                {
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: MapPage(toDo: 'ORDER'),
-                    withNavBar: false,
-                  )
-                }
-              else if (state is OrderFailed)
-                {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Order Failed'),
-                    ),
-                  ),
-                }
-            },
-            builder: (context, state) {
-              return Column(
-                children: [
-                  Expanded(
-                    // height: 130,
-                    child: Padding(
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          PickLocation(),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          TakePictureTrash(
-                              image: _image, onTap: _getImageFromCamera),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          SelectTotalWeight(
-                            onTap: () {
-                              setState(() {
-                                _showTotalWeight = !_showTotalWeight;
-                              });
-                            },
-                            state: state,
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          SelectTrashType(),
-                          SizedBox(height: 20),
-                          SelectPaymentMethod(onTap: () {}),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          ShowRingkasanAngkutan(),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-          Positioned(
-            bottom: 10,
-            //center
-            left: 20,
-            right: 20,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: ElevatedButton(
-                onPressed: () => _handleSubmit(context),
-                child: SizedBox(
-                    width: MediaQuery.of(context).size.width * 0.8,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [Text('Rp. 8.000'), Text('|'), Text('Pesan')],
-                    )),
-              ),
-            ),
-          ),
+      body: BlocBuilder<WebsocketBloc, WebsocketState>(
+        builder: (context, state) {
+          return Stack(
+            children: [
+              BlocConsumer<OrderBloc, OrderState>(
+                listener: (context, state) {
+                  if (state is OrderSuccess) {
+                    context.read<WebsocketBloc>().add(WebsocketConnect());
 
-          //panel to select payment method
-          if (_showPaymentMethod) _buildPaymentMethodPanel(),
-          if (_showTotalWeight) _buildTotalWeightPanel(),
-        ],
+                    Map<String, dynamic> message = {
+                      "event": "request_order",
+                      "data": {
+                        "id": 1,
+                        "pickup_location": {"lat": 0, "long": 0},
+                        "order_id": 1,
+                      }
+                    };
+
+                    String jsonString = jsonEncode(message);
+
+                    context
+                        .read<WebsocketBloc>()
+                        .add(WebsocketSend(jsonString));
+
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: FindDriverPage(),
+                      withNavBar: false,
+                    );
+                  } else if (state is OrderFailed) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Order Failed'),
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      Expanded(
+                        // height: 130,
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PickLocation(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              TakePictureTrash(
+                                  image: _image, onTap: _getImageFromCamera),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              SelectTotalWeight(
+                                onTap: () {
+                                  setState(() {
+                                    _showTotalWeight = !_showTotalWeight;
+                                  });
+                                },
+                                state: state,
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              SelectTrashType(),
+                              SizedBox(height: 20),
+                              SelectPaymentMethod(onTap: () {}),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              ShowRingkasanAngkutan(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              Positioned(
+                bottom: 10,
+                //center
+                left: 20,
+                right: 20,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: ElevatedButton(
+                    onPressed: () => _handleSubmit(context),
+                    child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text('Rp. 8.000'),
+                            Text('|'),
+                            Text('Pesan')
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+
+              //panel to select payment method
+              if (_showPaymentMethod) _buildPaymentMethodPanel(),
+              if (_showTotalWeight) _buildTotalWeightPanel(),
+            ],
+          );
+        },
       ),
     );
   }
