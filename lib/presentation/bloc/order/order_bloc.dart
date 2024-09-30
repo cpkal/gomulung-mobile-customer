@@ -66,10 +66,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       final order = Order.fromJson(jsonDecode(res.body));
 
       emit(OrderSuccess(order));
-
-      orders.add(order);
-
-      emit(OrdersUpdated(orders));
     }).catchError((err) => emit(OrderFailed()));
   }
 }
