@@ -47,6 +47,13 @@ final class OrderState extends Equatable {
       ];
 }
 
-final class OrderSuccess extends OrderState {}
+final class OrderSuccess extends OrderState {
+  final Order order;
+
+  OrderSuccess(this.order);
+
+  @override
+  List get props => [order];
+}
 
 final class OrderFailed extends OrderState {}

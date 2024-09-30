@@ -6,7 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/find_driver.dart';
-import 'package:las_customer/presentation/page/map.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_payment_method_panel.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_total_weight_panel.dart';
 import 'package:las_customer/presentation/widget/orders/pick_location.dart';
@@ -75,9 +74,12 @@ class _OrderPageState extends State<OrderPage> {
                     Map<String, dynamic> message = {
                       "event": "request_order",
                       "data": {
-                        "id": 1,
-                        "pickup_location": {"lat": 0, "long": 0},
-                        "order_id": 1,
+                        "id": state.order.userId,
+                        "pickup_location": {
+                          "lat": state.order.pickupLocation!.coordinates?[1],
+                          "long": state.order.pickupLocation!.coordinates?[0]
+                        },
+                        "order_id": state.order.id,
                       }
                     };
 

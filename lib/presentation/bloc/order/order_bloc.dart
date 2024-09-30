@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:las_customer/data/datasource/remote/api_service.dart';
+import 'package:las_customer/data/model/order.dart';
 import 'package:latlong2/latlong.dart';
 
 part 'order_event.dart';
@@ -59,8 +61,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       'trash_photo_path': 'NO IMAGE',
       'payment_method': 'tunai',
     }).then((res) {
-      print(res);
-      emit(OrderSuccess());
-    }).catchError((err) => print(err));
+      final order = Order.fromJson(jsonDecode(res.body));
+
+      emit(OrderSuccess(order));
+    }).catchError((err) => emit(OrderFailed()));
   }
 }
