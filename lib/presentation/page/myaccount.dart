@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:las_customer/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:las_customer/presentation/page/login.dart';
 
 class MyAccountPage extends StatelessWidget {
@@ -89,11 +88,7 @@ class MyAccountPage extends StatelessWidget {
                     height: 20,
                   ),
                   InkWell(
-                    onTap: () {
-                      context
-                          .read<AuthenticationBloc>()
-                          .add(AuthenticationLoggedOut());
-                    },
+                    onTap: () {},
                     child: Row(
                       children: [
                         Icon(Icons.logout),

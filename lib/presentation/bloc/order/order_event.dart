@@ -7,6 +7,15 @@ sealed class OrderEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class OrderPositionPicked extends OrderEvent {
+  final LatLng position;
+
+  OrderPositionPicked({required this.position});
+
+  @override
+  List<Object> get props => [position];
+}
+
 class OrderWeightTypeChanged extends OrderEvent {
   final String weightType;
 
@@ -42,3 +51,5 @@ class OrderPaymentMethodChanged extends OrderEvent {
   @override
   List<Object> get props => [paymentMethod];
 }
+
+class OrderSubmitted extends OrderEvent {}

@@ -10,42 +10,33 @@ class SelectPaymentMethod extends StatelessWidget {
   Widget build(BuildContext context) {
     return OrderCard(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(15),
-        decoration: BoxDecoration(
-          border: Border.all(
-            color: Colors.grey,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(Icons.attach_money),
+              SizedBox(
+                width: 10,
+              ),
+              Text(
+                'Metode pembayaran',
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ],
           ),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Icon(Icons.attach_money),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  'Metode pembayaran',
-                  style: Theme.of(context).textTheme.bodyLarge!.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Text('TUNAI', style: Theme.of(context).textTheme.bodyLarge),
-                SizedBox(
-                  width: 5,
-                ),
-              ],
-            ),
-          ],
-        ),
+          Row(
+            children: [
+              Text('TUNAI', style: Theme.of(context).textTheme.bodyLarge),
+              SizedBox(
+                width: 5,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

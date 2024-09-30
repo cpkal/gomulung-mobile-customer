@@ -21,10 +21,14 @@ class SelectTrashType extends StatelessWidget {
               ),
               Wrap(
                 spacing: 5.0,
-                alignment: WrapAlignment.spaceAround,
+                // alignment: WrapAlignment.,
                 // crossAxisAlignment: WrapCrossAlignment.,
                 children: [
                   ChoiceChip(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      side: BorderSide(color: Colors.grey),
                       label: Text('Rumahan'),
                       onSelected: (val) {
                         context
@@ -33,14 +37,22 @@ class SelectTrashType extends StatelessWidget {
                       },
                       selected: state.trash_type?['Rumahan'] ?? false),
                   ChoiceChip(
-                      label: Text('Logam'),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      side: BorderSide(color: Colors.grey),
+                      label: Text('Plastik'),
                       onSelected: (val) {
                         context
                             .read<OrderBloc>()
-                            .add(OrderTrashTypeChanged({'Logam': val}));
+                            .add(OrderTrashTypeChanged({'Plastik': val}));
                       },
-                      selected: state.trash_type?['Logam'] ?? false),
+                      selected: state.trash_type?['Plastik'] ?? false),
                   ChoiceChip(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      side: BorderSide(color: Colors.grey),
                       label: Text('Kertas'),
                       onSelected: (val) {
                         context
@@ -49,6 +61,10 @@ class SelectTrashType extends StatelessWidget {
                       },
                       selected: state.trash_type?['Kertas'] ?? false),
                   ChoiceChip(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      side: BorderSide(color: Colors.grey),
                       label: Text('Pakaian'),
                       onSelected: (val) {
                         context
@@ -57,6 +73,10 @@ class SelectTrashType extends StatelessWidget {
                       },
                       selected: state.trash_type?['Pakaian'] ?? false),
                   ChoiceChip(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      side: BorderSide(color: Colors.grey),
                       label: Text('Kardus'),
                       onSelected: (val) {
                         context
@@ -65,6 +85,10 @@ class SelectTrashType extends StatelessWidget {
                       },
                       selected: state.trash_type?['Kardus'] ?? false),
                   ChoiceChip(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
+                      side: BorderSide(color: Colors.grey),
                       label: Text('Lainnya'),
                       onSelected: (val) {
                         context

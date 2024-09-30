@@ -2,10 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:las_customer/core/route/route_paths.dart';
-import 'package:las_customer/model/repository/authentication_repository.dart';
-import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
+import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/map.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_payment_method_panel.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_total_weight_panel.dart';
@@ -42,6 +40,13 @@ class _OrderPageState extends State<OrderPage> {
     });
   }
 
+  void _handleSubmit(BuildContext context) {
+    // context.read<OrderBloc>().add(
+    //       OrderSubmitted(),
+    //     );
+    context.read<WebsocketBloc>().add(WebsocketConnect());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +64,25 @@ class _OrderPageState extends State<OrderPage> {
       ),
       body: Stack(
         children: [
-          BlocBuilder<OrderBloc, OrderState>(
+          BlocConsumer<OrderBloc, OrderState>(
+            listener: (context, state) => {
+              if (state is OrderSuccess)
+                {
+                  PersistentNavBarNavigator.pushNewScreen(
+                    context,
+                    screen: MapPage(toDo: 'ORDER'),
+                    withNavBar: false,
+                  )
+                }
+              else if (state is OrderFailed)
+                {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Order Failed'),
+                    ),
+                  ),
+                }
+            },
             builder: (context, state) {
               return Column(
                 children: [
@@ -113,14 +136,7 @@ class _OrderPageState extends State<OrderPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: ElevatedButton(
-                onPressed: () {
-                  //push and remove all prev routes
-                  PersistentNavBarNavigator.pushNewScreen(
-                    context,
-                    screen: MapPage(toDo: 'ORDER'),
-                    withNavBar: false,
-                  );
-                },
+                onPressed: () => _handleSubmit(context),
                 child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Row(

@@ -1,4 +1,4 @@
-import 'package:las_customer/model/data/customer.dart';
+import 'package:las_customer/data/model/customer.dart';
 
 class CustomerRepository {
   Future<Customer> getCustomerById(int id) async {

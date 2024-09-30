@@ -4,17 +4,46 @@ import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/presentation/bloc/register/register_bloc.dart';
 
 class RegisterInputAccountPage extends StatelessWidget {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
+  void _handleSubmit(BuildContext context) async {
+    if (_formKey.currentState!.validate()) {
+      context.read<RegisterBloc>().add(
+            RegisterSubmitted(
+              emailController.text,
+              phoneController.text,
+              passwordController.text,
+              nameController.text,
+            ),
+          );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<RegisterBloc, RegisterState>(
-        builder: (context, state) {
-          return Column(
+      body: BlocListener<RegisterBloc, RegisterState>(
+        listener: (context, state) {
+          if (state is RegisterSuccess) {
+            //go to login page and remove all previous route
+            Navigator.pushNamedAndRemoveUntil(
+                context, RoutePaths.login, (route) => false);
+          } else if (state is RegisterFailed) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Gagal mendaftar'),
+              ),
+            );
+          }
+        },
+        child: Form(
+          key: _formKey,
+          child: Column(
             children: [
               Expanded(
                 child: Column(
@@ -52,6 +81,12 @@ class RegisterInputAccountPage extends StatelessWidget {
                           labelText: 'Nama',
                           border: OutlineInputBorder(),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nama tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
                     ),
 
@@ -67,6 +102,12 @@ class RegisterInputAccountPage extends StatelessWidget {
                           labelText: 'Email',
                           border: OutlineInputBorder(),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
                     ),
 
@@ -81,6 +122,12 @@ class RegisterInputAccountPage extends StatelessWidget {
                           labelText: 'Nomor WhatsApp',
                           border: OutlineInputBorder(),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Nomor WhatsApp tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
                     ),
 
@@ -97,6 +144,12 @@ class RegisterInputAccountPage extends StatelessWidget {
                           labelText: 'Password',
                           border: OutlineInputBorder(),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Password tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                     SizedBox(
@@ -118,21 +171,7 @@ class RegisterInputAccountPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
                 child: ElevatedButton(
-                  onPressed: () {
-                    context.read<RegisterBloc>().add(
-                          RegisterSubmitted(
-                            emailController.text,
-                            phoneController.text,
-                            passwordController.text,
-                            nameController.text,
-                          ),
-                        );
-
-                    Navigator.pushNamed(
-                      context,
-                      RoutePaths.registerVerifyEmail,
-                    );
-                  },
+                  onPressed: () => _handleSubmit(context),
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Center(
@@ -142,8 +181,8 @@ class RegisterInputAccountPage extends StatelessWidget {
                 ),
               )
             ],
-          );
-        },
+          ),
+        ),
       ),
     );
   }

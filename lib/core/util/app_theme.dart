@@ -40,8 +40,16 @@ ThemeData appTheme() {
         borderSide: BorderSide(color: Colors.grey.shade700),
         borderRadius: BorderRadius.circular(100),
       ),
+      errorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFFF44336)),
+        borderRadius: BorderRadius.circular(100),
+      ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: Color(0xFF285238)),
+        borderRadius: BorderRadius.circular(100),
+      ),
+      focusedErrorBorder: OutlineInputBorder(
+        borderSide: BorderSide(color: Color(0xFFF44336)),
         borderRadius: BorderRadius.circular(100),
       ),
       //smaller padding

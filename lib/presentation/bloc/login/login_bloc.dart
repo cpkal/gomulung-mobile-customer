@@ -1,58 +1,41 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:formz/formz.dart';
-import 'package:las_customer/model/repository/authentication_repository.dart';
-import 'package:las_customer/presentation/bloc/authentication/authentication_bloc.dart';
+import 'package:las_customer/core/util/secure_storage.dart';
+import 'package:las_customer/data/datasource/remote/api_service.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc({
-    required AuthenticationRepository authenticationRepository,
-  })  : _authenticationRepository = authenticationRepository,
-        super(LoginState()) {
+  final SecureStorage _secureStorage = SecureStorage();
+
+  LoginBloc() : super(LoginInitial()) {
     on<LoginSubmitted>(_onLoginSubmitted);
   }
-
-  final AuthenticationRepository _authenticationRepository;
 
   Future<void> _onLoginSubmitted(
     LoginSubmitted event,
     Emitter<LoginState> emit,
   ) async {
-    emit(state.copyWith(status: FormzSubmissionStatus.inProgress));
-    try {
-      print('LoginBloc: _onLoginSubmitted: email: ${event}');
-      final isAuthenticated = await _authenticationRepository.login(
-        email: event.email,
-        password: event.password,
-      );
+    emit(LoginLoading());
 
-      emit(state.copyWith(status: FormzSubmissionStatus.success));
+    await ApiService.postData('/auth/login', {
+      'email': event.email,
+      'password': event.password,
+    }).then((res) {
+      if (res.statusCode == HttpStatus.ok) {
+        var token = jsonDecode(res.body)["token"];
 
-      if (isAuthenticated) {
-        emit(state.copyWith(
-          status: FormzSubmissionStatus.success,
-        ));
+        _secureStorage.writeSecureData(key: 'token', value: token);
+        emit(LoginSuccess());
       } else {
-        emit(state.copyWith(
-          status: FormzSubmissionStatus.failure,
-          failureMessage: 'Invalid email or password',
-        ));
+        emit(LoginFailed());
       }
-    } on SocketException {
-      emit(state.copyWith(
-        status: FormzSubmissionStatus.failure,
-        failureMessage: 'No Internet Connection',
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        status: FormzSubmissionStatus.failure,
-        failureMessage: e.toString(),
-      ));
-    }
+    }).catchError((e) {
+      emit(LoginFailed());
+    });
   }
 }
