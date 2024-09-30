@@ -5,7 +5,19 @@ import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/page/map.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
-class OrderProcessPage extends StatelessWidget {
+class OrderProcessPage extends StatefulWidget {
+  @override
+  _OrderProcessPageState createState() => _OrderProcessPageState();
+}
+
+class _OrderProcessPageState extends State<OrderProcessPage> {
+  @override
+  void initState() {
+    context.read<OrderBloc>().add(FetchOrders());
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,12 +28,14 @@ class OrderProcessPage extends StatelessWidget {
         padding: EdgeInsets.all(20),
         child: BlocBuilder<OrderBloc, OrderState>(
           builder: (context, state) {
-            if (state is OrdersUpdated) {
+            if (state is OrdersLoaded) {
               return Column(
                 children: [
                   //foreach order
+
                   for (var order in state.orders)
                     Container(
+                      margin: EdgeInsets.only(bottom: 20),
                       //border radius
                       width: MediaQuery.of(context).size.width,
                       padding: EdgeInsets.all(10),
@@ -39,7 +53,7 @@ class OrderProcessPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                'Rp. 10.000',
+                                order.grandTotal.toString(),
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineMedium!
@@ -66,7 +80,6 @@ class OrderProcessPage extends StatelessWidget {
                         ],
                       ),
                     ),
-                  SizedBox(height: 20),
 
                   // Container(
                   //   //border radius
@@ -114,7 +127,9 @@ class OrderProcessPage extends StatelessWidget {
               );
             }
 
-            return Container();
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           },
         ),
       ),

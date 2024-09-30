@@ -53,3 +53,5 @@ class OrderPaymentMethodChanged extends OrderEvent {
 }
 
 class OrderSubmitted extends OrderEvent {}
+
+class FetchOrders extends OrderEvent {}

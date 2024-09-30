@@ -11,8 +11,6 @@ part 'order_event.dart';
 part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
-  List<Order> orders = [];
-
   OrderBloc() : super(OrderState()) {
     on<OrderPositionPicked>((event, emit) {
       print('ini dari order ${event.position}');
@@ -35,6 +33,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     });
 
     on<OrderSubmitted>(_onOrderSubmitted);
+    on<FetchOrders>(_onFetchOrders);
   }
 
   void _onOrderSubmitted(OrderSubmitted event, Emitter<OrderState> emit) async {
@@ -66,6 +65,14 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       final order = Order.fromJson(jsonDecode(res.body));
 
       emit(OrderSuccess(order));
+    }).catchError((err) => emit(OrderFailed()));
+  }
+
+  void _onFetchOrders(FetchOrders event, Emitter<OrderState> emit) async {
+    emit(OrderLoading());
+    await ApiService.fetchData('/orders').then((res) {
+      final orders = jsonDecode(res.body) as List;
+      emit(OrdersLoaded(orders.map((order) => Order.fromJson(order)).toList()));
     }).catchError((err) => emit(OrderFailed()));
   }
 }

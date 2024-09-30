@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:las_customer/presentation/bloc/web_socket/web_socket_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
+import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/find_driver.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_payment_method_panel.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_total_weight_panel.dart';
@@ -25,7 +25,8 @@ class OrderPage extends StatefulWidget {
 class _OrderPageState extends State<OrderPage> {
   late bool _showPaymentMethod = false;
   late bool _showTotalWeight = false;
-  String? jsonString;
+
+  bool _isNavigating = false;
 
   File? _image;
   final ImagePicker _picker = ImagePicker();
@@ -49,143 +50,134 @@ class _OrderPageState extends State<OrderPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text('LAS'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications_outlined),
-              onPressed: () {
-                // Navigator.pushNamed(context, RoutePaths.myAccount);
-              },
-            ),
-          ],
-          automaticallyImplyLeading: false,
-        ),
-        body: BlocBuilder<WebSocketBloc, WebSocketState>(
-          builder: (context, state) {
-            return Stack(
-              children: [
-                BlocListener<WebSocketBloc, WebSocketState>(
-                  listener: (context, state) {
-                    if (state is WebSocketClientConnected) {
-                      context.read<WebSocketBloc>().add(
-                          SendWebSocketMessage(state.clientId, jsonString!));
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: FindDriverPage(),
-                        withNavBar: false,
-                      );
-                    }
-                  },
-                  child: BlocConsumer<OrderBloc, OrderState>(
-                    listener: (context, state) {
-                      if (state is OrderSuccess) {
-                        // context.read<WebsocketBloc>().add(WebsocketConnect());
+      appBar: AppBar(
+        title: Text('LAS'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_outlined),
+            onPressed: () {
+              // Navigator.pushNamed(context, RoutePaths.myAccount);
+            },
+          ),
+        ],
+        automaticallyImplyLeading: false,
+      ),
+      body: BlocBuilder<WebsocketBloc, WebsocketState>(
+        builder: (context, state) {
+          return Stack(
+            children: [
+              BlocConsumer<OrderBloc, OrderState>(
+                listener: (context, state) {
+                  if (state is OrderSuccess) {
+                    context.read<WebsocketBloc>().add(WebsocketConnect());
 
-                        Map<String, dynamic> message = {
-                          "event": "request_order",
-                          "data": {
-                            "id": state.order.userId,
-                            "pickup_location": {
-                              "lat":
-                                  state.order.pickupLocation!.coordinates?[1],
-                              "long":
-                                  state.order.pickupLocation!.coordinates?[0]
-                            },
-                            "order_id": state.order.id,
-                          }
-                        };
-
-                        jsonString = jsonEncode(message);
-
-                        context
-                            .read<WebSocketBloc>()
-                            .add(ConnectWebSocketClient('ws://10.0.2.2:3000'));
-                      } else if (state is OrderFailed) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Order Failed'),
-                          ),
-                        );
+                    Map<String, dynamic> message = {
+                      "event": "request_order",
+                      "data": {
+                        "id": state.order.userId,
+                        "pickup_location": {
+                          "lat": state.order.pickupLocation!.coordinates?[1],
+                          "long": state.order.pickupLocation!.coordinates?[0]
+                        },
+                        "order_id": state.order.id,
                       }
-                    },
-                    builder: (context, state) {
-                      return Column(
-                        children: [
-                          Expanded(
-                            // height: 130,
-                            child: Padding(
-                              padding: EdgeInsets.all(20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  PickLocation(),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  TakePictureTrash(
-                                      image: _image,
-                                      onTap: _getImageFromCamera),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  SelectTotalWeight(
-                                    onTap: () {
-                                      setState(() {
-                                        _showTotalWeight = !_showTotalWeight;
-                                      });
-                                    },
-                                    state: state,
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  SelectTrashType(),
-                                  SizedBox(height: 20),
-                                  SelectPaymentMethod(onTap: () {}),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  ShowRingkasanAngkutan(),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-                Positioned(
-                  bottom: 10,
-                  //center
-                  left: 20,
-                  right: 20,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20.0),
-                    child: ElevatedButton(
-                      onPressed: () => _handleSubmit(context),
-                      child: SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.8,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text('Rp. 8.000'),
-                              Text('|'),
-                              Text('Pesan')
-                            ],
-                          )),
-                    ),
-                  ),
-                ),
+                    };
 
-                //panel to select payment method
-                if (_showPaymentMethod) _buildPaymentMethodPanel(),
-                if (_showTotalWeight) _buildTotalWeightPanel(),
-              ],
-            );
-          },
-        ));
+                    String jsonString = jsonEncode(message);
+
+                    context
+                        .read<WebsocketBloc>()
+                        .add(WebsocketSend(jsonString));
+
+                    PersistentNavBarNavigator.pushNewScreen(
+                      context,
+                      screen: FindDriverPage(),
+                      withNavBar: false,
+                    );
+                  } else if (state is OrderFailed) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Order Failed'),
+                      ),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      Expanded(
+                        // height: 130,
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              PickLocation(),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              TakePictureTrash(
+                                  image: _image, onTap: _getImageFromCamera),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              SelectTotalWeight(
+                                onTap: () {
+                                  setState(() {
+                                    _showTotalWeight = !_showTotalWeight;
+                                  });
+                                },
+                                state: state,
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              SelectTrashType(),
+                              SizedBox(height: 20),
+                              SelectPaymentMethod(onTap: () {}),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              ShowRingkasanAngkutan(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+              Positioned(
+                bottom: 10,
+                //center
+                left: 20,
+                right: 20,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  child: ElevatedButton(
+                    onPressed: () => _handleSubmit(context),
+                    child: SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.8,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text('Rp. 8.000'),
+                            Text('|'),
+                            Text('Pesan')
+                          ],
+                        )),
+                  ),
+                ),
+              ),
+
+              //panel to select payment method
+              if (_showPaymentMethod) _buildPaymentMethodPanel(),
+              if (_showTotalWeight) _buildTotalWeightPanel(),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildPaymentMethodPanel() {

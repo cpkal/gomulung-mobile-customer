@@ -15,8 +15,13 @@ class ApiService {
 
   static Future<http.Response> fetchData(String endpoint) async {
     final url = Uri.parse('$_baseUrl/$endpoint');
-    final response = await http.get(url);
-
+    final token = await getToken(); // Get token from secure storage
+    final response = await http.get(
+      url,
+      headers: {
+        if (token != null) 'Authorization': token, // Include token if available
+      },
+    );
     if (response.statusCode == 200) {
       return response;
     } else {
@@ -29,8 +34,6 @@ class ApiService {
     final url = Uri.parse('$_baseUrl/$endpoint');
     final token = await getToken(); // Get token from secure storage
 
-    print(token);
-
     final response = await http.post(
       url,
       body: jsonEncode(data),
@@ -39,8 +42,6 @@ class ApiService {
         if (token != null) 'Authorization': token, // Include token if available
       },
     );
-
-    print(response.body);
 
     if (response.statusCode == 200) {
       return response;
@@ -107,8 +108,6 @@ class ApiService {
     if (token != null) {
       request.headers['Authorization'] = token;
     }
-
-    print(data);
 
     final response = await request.send();
 
