@@ -5,7 +5,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
-import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapPage extends StatefulWidget {
@@ -43,149 +42,143 @@ class _MapPageState extends State<MapPage> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<WebsocketBloc, WebsocketState>(
-      builder: (context, state) {
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-              backgroundColor:
-                  Colors.transparent, // Make the AppBar transparent
-              elevation: 0, // Remove shadow
-              leading: Container(
-                //circle white container
-                margin: EdgeInsets.only(left: 10),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: IconButton(
-                  icon: Icon(Icons.arrow_back,
-                      color: Colors.black), // Custom back button icon
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Navigate back
-                  },
-                ),
-              ),
-              centerTitle: true,
-              title: widget.toDo == 'ORDER'
-                  ? Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(200),
-                      ),
-                      child: isLASCrewFound
-                          ? Text('Kru LAS ditemukan')
-                          : Text('Sedang mencari kru LAS'),
-                    )
-                  : Container(), //, //  Custom title
-              titleTextStyle: Theme.of(context).textTheme.headlineSmall),
-          //map
-          body: BlocProvider(
-            create: (context) => MapBloc(),
-            child: BlocConsumer<MapBloc, MapState>(
-              listener: (context, state) {
-                if (state is MapPositionUpdate) {
-                  mapController.move(
-                      LatLng(state.position.latitude, state.position.longitude),
-                      18);
-                }
-              },
-              builder: (context, state) {
-                return Stack(
-                  children: [
-                    FlutterMap(
-                      mapController: mapController,
-                      options: MapOptions(
-                        onPositionChanged: (position, hasGesture) {
-                          context.read<MapBloc>().add(MapPositionChanged(
-                              Position(
-                                  latitude: position.center.latitude,
-                                  longitude: position.center.longitude,
-                                  timestamp: DateTime.now(),
-                                  accuracy: 0.0,
-                                  altitude: 0.0,
-                                  altitudeAccuracy: 0.0,
-                                  heading: 0.0,
-                                  headingAccuracy: 0.0,
-                                  speed: 0.0,
-                                  speedAccuracy: 0.0)));
-                        },
-                        initialZoom: 18,
-                        initialCenter: state is MapPositionUpdate
-                            ? LatLng(state.position.latitude,
-                                state.position.longitude)
-                            : LatLng(-6.1753924, 106.8271528),
-                      ),
-                      children: [
-                        TileLayer(
-                          urlTemplate:
-                              'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                          subdomains: const ['a', 'b', 'c'],
-                        ),
-                      ],
-                    ),
-                    //center marker
-                    widget.toDo == 'PICK_LOCATION'
-                        ? Center(
-                            child: Icon(
-                              Icons.location_on,
-                              color: Colors.red,
-                              size: 50,
-                            ),
-                          )
-                        : Container(),
-
-                    //zoom in, zoom out, and my location button
-                    // Positioned(
-                    //   bottom: MediaQuery.of(context).size.height * 0.1 + 20,
-                    //   right: 20,
-                    //   child: Column(
-                    //     children: [
-                    //       ElevatedButton(
-                    //         onPressed: () {
-                    //           if (state is MapPositionUpdate) {
-                    //             mapController.move(
-                    //                 LatLng(state.position.latitude,
-                    //                     state.position.longitude),
-                    //                 18 + 1);
-                    //           }
-                    //         },
-                    //         child: Icon(Icons.add),
-                    //       ),
-                    //       SizedBox(height: 10),
-                    //       ElevatedButton(
-                    //         onPressed: () {
-                    //           if (state is MapPositionUpdate) {
-                    //             mapController.move(
-                    //                 LatLng(state.position.latitude,
-                    //                     state.position.longitude),
-                    //                 18 - 1);
-                    //           }
-                    //         },
-                    //         child: Icon(Icons.remove),
-                    //       ),
-                    //       SizedBox(height: 10),
-                    //       ElevatedButton(
-                    //         onPressed: () {},
-                    //         child: Icon(Icons.my_location),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    widget.toDo == 'PICK_LOCATION'
-                        ? _buildPanelPickMapLocation(state)
-                        : isLASCrewFound
-                            ? _buildPanelOnOrderProcess()
-                            : _buildPanelCancelOrder(),
-                    // _buildPanelOnOrderProcess()
-                  ],
-                );
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+          backgroundColor: Colors.transparent, // Make the AppBar transparent
+          elevation: 0, // Remove shadow
+          leading: Container(
+            //circle white container
+            margin: EdgeInsets.only(left: 10),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(100),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.arrow_back,
+                  color: Colors.black), // Custom back button icon
+              onPressed: () {
+                Navigator.of(context).pop(); // Navigate back
               },
             ),
           ),
-        );
-      },
+          centerTitle: true,
+          title: widget.toDo == 'ORDER'
+              ? Container(
+                  padding: EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(200),
+                  ),
+                  child: isLASCrewFound
+                      ? Text('Kru LAS ditemukan')
+                      : Text('Sedang mencari kru LAS'),
+                )
+              : Container(), //, //  Custom title
+          titleTextStyle: Theme.of(context).textTheme.headlineSmall),
+      //map
+      body: BlocProvider(
+        create: (context) => MapBloc(),
+        child: BlocConsumer<MapBloc, MapState>(
+          listener: (context, state) {
+            if (state is MapPositionUpdate) {
+              mapController.move(
+                  LatLng(state.position.latitude, state.position.longitude),
+                  18);
+            }
+          },
+          builder: (context, state) {
+            return Stack(
+              children: [
+                FlutterMap(
+                  mapController: mapController,
+                  options: MapOptions(
+                    onPositionChanged: (position, hasGesture) {
+                      context.read<MapBloc>().add(MapPositionChanged(Position(
+                          latitude: position.center.latitude,
+                          longitude: position.center.longitude,
+                          timestamp: DateTime.now(),
+                          accuracy: 0.0,
+                          altitude: 0.0,
+                          altitudeAccuracy: 0.0,
+                          heading: 0.0,
+                          headingAccuracy: 0.0,
+                          speed: 0.0,
+                          speedAccuracy: 0.0)));
+                    },
+                    initialZoom: 18,
+                    initialCenter: state is MapPositionUpdate
+                        ? LatLng(
+                            state.position.latitude, state.position.longitude)
+                        : LatLng(-6.1753924, 106.8271528),
+                  ),
+                  children: [
+                    TileLayer(
+                      urlTemplate:
+                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      subdomains: const ['a', 'b', 'c'],
+                    ),
+                  ],
+                ),
+                //center marker
+                widget.toDo == 'PICK_LOCATION'
+                    ? Center(
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.red,
+                          size: 50,
+                        ),
+                      )
+                    : Container(),
+
+                //zoom in, zoom out, and my location button
+                // Positioned(
+                //   bottom: MediaQuery.of(context).size.height * 0.1 + 20,
+                //   right: 20,
+                //   child: Column(
+                //     children: [
+                //       ElevatedButton(
+                //         onPressed: () {
+                //           if (state is MapPositionUpdate) {
+                //             mapController.move(
+                //                 LatLng(state.position.latitude,
+                //                     state.position.longitude),
+                //                 18 + 1);
+                //           }
+                //         },
+                //         child: Icon(Icons.add),
+                //       ),
+                //       SizedBox(height: 10),
+                //       ElevatedButton(
+                //         onPressed: () {
+                //           if (state is MapPositionUpdate) {
+                //             mapController.move(
+                //                 LatLng(state.position.latitude,
+                //                     state.position.longitude),
+                //                 18 - 1);
+                //           }
+                //         },
+                //         child: Icon(Icons.remove),
+                //       ),
+                //       SizedBox(height: 10),
+                //       ElevatedButton(
+                //         onPressed: () {},
+                //         child: Icon(Icons.my_location),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+                widget.toDo == 'PICK_LOCATION'
+                    ? _buildPanelPickMapLocation(state)
+                    : isLASCrewFound
+                        ? _buildPanelOnOrderProcess()
+                        : _buildPanelCancelOrder(),
+                // _buildPanelOnOrderProcess()
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 

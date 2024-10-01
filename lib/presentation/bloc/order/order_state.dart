@@ -57,3 +57,12 @@ final class OrderSuccess extends OrderState {
 }
 
 final class OrderFailed extends OrderState {}
+
+final class OrdersUpdated extends OrderState {
+  final List<Order> orders;
+
+  OrdersUpdated(this.orders);
+
+  @override
+  List get props => [orders];
+}
