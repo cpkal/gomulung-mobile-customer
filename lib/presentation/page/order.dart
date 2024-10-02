@@ -74,7 +74,7 @@ class _OrderPageState extends State<OrderPage> {
                     Map<String, dynamic> message = {
                       "event": "request_order",
                       "data": {
-                        "id": state.order.userId,
+                        "user_id": state.order.userId,
                         "pickup_location": {
                           "lat": state.order.pickupLocation!.coordinates?[1],
                           "long": state.order.pickupLocation!.coordinates?[0]

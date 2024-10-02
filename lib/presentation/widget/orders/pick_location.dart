@@ -6,10 +6,7 @@ import 'package:las_customer/presentation/widget/orders/order_card.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class PickLocation extends StatelessWidget {
-  // final Function() onTap;
-  // final Widget child;
-
-  // const PickLocation({required this.onTap, required this.child});
+  const PickLocation({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +14,7 @@ class PickLocation extends StatelessWidget {
       onTap: () {
         PersistentNavBarNavigator.pushNewScreen(
           context,
-          screen: MapPage(toDo: 'PICK_LOCATION'),
+          screen: MapPage(),
           withNavBar: false,
         );
       },
@@ -37,7 +34,7 @@ class PickLocation extends StatelessWidget {
           ),
           BlocBuilder<MapBloc, MapState>(
             builder: (context, state) {
-              if (state is MapPositionUpdate) {
+              if (state is MapPositionPicked) {
                 return Flexible(
                   child: Text(
                     state.position.toString(),

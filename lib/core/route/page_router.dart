@@ -28,7 +28,7 @@ class PageRouter {
       case RoutePaths.subRoot:
         return MaterialPageRoute(builder: (_) => SubRootPage());
       case RoutePaths.map:
-        return MaterialPageRoute(builder: (_) => MapPage(toDo: 'DEF'));
+        return MaterialPageRoute(builder: (_) => MapPage());
       case RoutePaths.chat:
         return MaterialPageRoute(builder: (_) => ChatPage());
       case RoutePaths.forgotPassword:

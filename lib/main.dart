@@ -42,7 +42,8 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(create: (context) => MapBloc()),
           BlocProvider(create: (context) => OrderBloc()),
-          BlocProvider(create: (context) => WebsocketBloc(webSocketService))
+          BlocProvider(create: (context) => WebsocketBloc(webSocketService)),
+          BlocProvider(create: (context) => MapBloc()),
         ],
         child: MaterialApp(
           title: 'LAS Customer Application',

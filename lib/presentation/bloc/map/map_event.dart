@@ -8,7 +8,7 @@ sealed class MapEvent extends Equatable {
 }
 
 class MapPositionChanged extends MapEvent {
-  final Position position;
+  final LatLng position;
 
   MapPositionChanged(this.position);
 
@@ -16,11 +16,13 @@ class MapPositionChanged extends MapEvent {
   List<Object> get props => [position];
 }
 
-class MapPositionPicked extends MapEvent {
-  final Position position;
+class PickPosition extends MapEvent {
+  final LatLng position;
 
-  MapPositionPicked(this.position);
+  PickPosition(this.position);
 
   @override
   List<Object> get props => [position];
 }
+
+class GetCurrentPosition extends MapEvent {}

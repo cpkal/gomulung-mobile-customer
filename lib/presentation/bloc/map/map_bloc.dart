@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:latlong2/latlong.dart';
 
 part 'map_event.dart';
 part 'map_state.dart';
@@ -18,12 +19,20 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     //   add(MapPositionChanged(position));
     // });
 
+    on<GetCurrentPosition>((event, emit) async {
+      print('xdd');
+      emit(MapLoading());
+      final position = await _getCurrentPosition();
+      emit(CurrentPosition(LatLng(position.latitude, position.longitude)));
+    });
+
     on<MapPositionChanged>((event, emit) {
       emit(MapPositionUpdate(event.position));
     });
 
-    on<MapPositionPicked>((event, emit) {
-      emit(MapPositionUpdate(event.position));
+    on<PickPosition>((event, emit) {
+      print('Picked position: ${event.position}');
+      emit(MapPositionPicked(event.position));
     });
   }
 
@@ -66,7 +75,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       accuracy: LocationAccuracy.high,
       distanceFilter: 10,
     )).then((value) {
-      add(MapPositionChanged(value));
       return value;
     });
   }
