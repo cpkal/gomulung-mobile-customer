@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:las_customer/data/datasource/remote/nominatim_service.dart';
 import 'package:latlong2/latlong.dart';
 
 part 'map_event.dart';
@@ -20,7 +22,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     // });
 
     on<GetCurrentPosition>((event, emit) async {
-      print('xdd');
       emit(MapLoading());
       final position = await _getCurrentPosition();
       emit(CurrentPosition(LatLng(position.latitude, position.longitude)));
@@ -31,8 +32,22 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     });
 
     on<PickPosition>((event, emit) {
-      print('Picked position: ${event.position}');
       emit(MapPositionPicked(event.position));
+    });
+
+    on<GetAddressFromPosition>((event, emit) async {
+      // emit(MapLoading());
+
+      print('jalan');
+
+      NominatimService nominatimService = NominatimService();
+      final response = await nominatimService.search(
+          'lat=${event.position.latitude}&lon=${event.position.longitude}');
+
+      //parse response
+      final address = jsonDecode(response)['display_name'];
+
+      emit(AddressFromPosition(address));
     });
   }
 
@@ -71,7 +86,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   Future<Position> _getCurrentPosition() {
     return Geolocator.getCurrentPosition(
-        locationSettings: LocationSettings(
+        locationSettings: const LocationSettings(
       accuracy: LocationAccuracy.high,
       distanceFilter: 10,
     )).then((value) {

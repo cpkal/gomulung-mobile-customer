@@ -26,8 +26,6 @@ class _OrderPageState extends State<OrderPage> {
   late bool _showPaymentMethod = false;
   late bool _showTotalWeight = false;
 
-  bool _isNavigating = false;
-
   File? _image;
   final ImagePicker _picker = ImagePicker();
 

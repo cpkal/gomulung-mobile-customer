@@ -32,6 +32,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       emit(state.copyWith(payment_method: event.paymentMethod));
     });
 
+    on<OrderAddressChanged>((event, emit) {
+      emit(state.copyWith(address: event.address));
+    });
+
     on<OrderSubmitted>(_onOrderSubmitted);
     on<FetchOrders>(_onFetchOrders);
   }
@@ -56,11 +60,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         "lat": state.position!.latitude,
         "long": state.position!.longitude
       },
-      'address': 'test address',
+      'address': state.address,
       'trash_type': 'Rumahan',
       'trash_weight_selection': state.weight_type,
       'trash_photo_path': 'NO IMAGE',
-      'payment_method': 'tunai',
+      'payment_method': 'TUNAI',
     }).then((res) {
       final order = Order.fromJson(jsonDecode(res.body));
 

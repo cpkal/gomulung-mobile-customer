@@ -55,3 +55,12 @@ class OrderPaymentMethodChanged extends OrderEvent {
 class OrderSubmitted extends OrderEvent {}
 
 class FetchOrders extends OrderEvent {}
+
+class OrderAddressChanged extends OrderEvent {
+  final String address;
+
+  OrderAddressChanged(this.address);
+
+  @override
+  List<Object> get props => [address];
+}

@@ -2,6 +2,7 @@ part of 'order_bloc.dart';
 
 final class OrderState extends Equatable {
   LatLng? position;
+  String? address;
   String? weight_type;
   String? image_path;
   Map<String, bool>? trash_type = {
@@ -16,6 +17,7 @@ final class OrderState extends Equatable {
 
   OrderState(
       {this.position,
+      this.address,
       this.weight_type,
       this.image_path,
       this.trash_type,
@@ -23,6 +25,7 @@ final class OrderState extends Equatable {
 
   OrderState copyWith({
     LatLng? position,
+    String? address,
     String? weight_type,
     String? image_path,
     Map<String, bool>? trash_type,
@@ -30,6 +33,7 @@ final class OrderState extends Equatable {
   }) {
     return OrderState(
       position: position ?? this.position,
+      address: address ?? this.address,
       weight_type: weight_type ?? this.weight_type,
       image_path: image_path ?? this.image_path,
       trash_type: trash_type ?? this.trash_type,
@@ -40,6 +44,7 @@ final class OrderState extends Equatable {
   @override
   List get props => [
         position,
+        address,
         weight_type,
         image_path,
         trash_type,

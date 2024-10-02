@@ -26,3 +26,12 @@ class PickPosition extends MapEvent {
 }
 
 class GetCurrentPosition extends MapEvent {}
+
+class GetAddressFromPosition extends MapEvent {
+  final LatLng position;
+
+  GetAddressFromPosition(this.position);
+
+  @override
+  List<Object> get props => [position];
+}

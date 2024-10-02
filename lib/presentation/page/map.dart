@@ -17,11 +17,14 @@ class MapPage extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapPage> {
-  MapController mapController = MapController();
+  late MapController mapController;
   bool _isDragging = false;
+  double? _prevLatitude;
+  double? _prevLongitude;
 
   @override
   void initState() {
+    mapController = MapController();
     context.read<MapBloc>().add(GetCurrentPosition());
     super.initState();
   }
@@ -70,6 +73,10 @@ class _MapPageState extends State<MapPage> {
           }
 
           if (state is CurrentPosition) {
+            //save current psotion to variabel
+            _prevLatitude = state.position.latitude;
+            _prevLongitude = state.position.longitude;
+
             return Stack(
               children: [
                 FlutterMap(
@@ -104,6 +111,80 @@ class _MapPageState extends State<MapPage> {
                     ),
                   ],
                 ),
+
+                //positioned buttons for zoom in, zoom out, and my location
+                Positioned(
+                  //middle right
+                  right: 10,
+                  top: MediaQuery.of(context).size.height * 0.3,
+                  child: Column(
+                    children: [
+                      Container(
+                        //border grey
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.grey.shade300,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Container(
+                          //white background
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(100),
+                          ),
+                          child: IconButton(
+                            onPressed: () {
+                              mapController.move(
+                                  LatLng(_prevLatitude!, _prevLongitude!),
+                                  mapController.camera.zoom);
+                            },
+                            icon: Icon(Icons.my_location),
+                            padding: EdgeInsets.all(20),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        //border grey
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            mapController.move(
+                                LatLng(state.position.latitude,
+                                    state.position.longitude),
+                                mapController.camera.zoom + 1);
+                          },
+                          icon: Icon(Icons.add),
+                          padding: EdgeInsets.all(20),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        //border grey
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            mapController.move(
+                                LatLng(state.position.latitude,
+                                    state.position.longitude),
+                                mapController.camera.zoom - 1);
+                          },
+                          icon: Icon(Icons.remove),
+                          padding: EdgeInsets.all(20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 Center(
                   child: Icon(
                     Icons.location_on,
@@ -138,14 +219,14 @@ class _MapPageState extends State<MapPage> {
                               ),
                             );
 
-                        setState(() {
-                          _isDragging = true;
-                        });
+                        // setState(() {
+                        //   _isDragging = true;
+                        // });
                       } else {
                         //call api to get address
-                        setState(() {
-                          _isDragging = false;
-                        });
+                        // setState(() {
+                        //   _isDragging = false;
+                        // });
                       }
                     },
                     initialZoom: 18,
@@ -160,6 +241,70 @@ class _MapPageState extends State<MapPage> {
                     ),
                   ],
                 ),
+
+                //positioned buttons for zoom in, zoom out, and my location
+                Positioned(
+                  //middle right
+                  right: 10,
+                  top: MediaQuery.of(context).size.height * 0.3,
+                  child: Column(
+                    children: [
+                      Container(
+                        //border grey
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            mapController.move(
+                                LatLng(_prevLatitude!, _prevLongitude!),
+                                mapController.camera.zoom);
+                          },
+                          icon: Icon(Icons.my_location),
+                          padding: EdgeInsets.all(20),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        //border grey
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            mapController.move(
+                                LatLng(state.position.latitude,
+                                    state.position.longitude),
+                                mapController.camera.zoom + 1);
+                          },
+                          icon: Icon(Icons.add),
+                          padding: EdgeInsets.all(20),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        //border grey
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: IconButton(
+                          onPressed: () {
+                            mapController.move(
+                                LatLng(state.position.latitude,
+                                    state.position.longitude),
+                                mapController.camera.zoom - 1);
+                          },
+                          icon: Icon(Icons.remove),
+                          padding: EdgeInsets.all(20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
                 //center marker
                 Center(
                   child: Icon(
@@ -197,15 +342,13 @@ class _MapPageState extends State<MapPage> {
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(),
             onPressed: () {
-              print(mapController.camera.center.latitude);
-              print(mapController.camera.center.longitude);
               context.read<MapBloc>().add(PickPosition(LatLng(
                   mapController.camera.center.latitude,
                   mapController.camera.center.longitude)));
 
-              // context.read<OrderBloc>().add(OrderPositionPicked(
-              //     position: LatLng(mapController.camera.center.latitude,
-              //         mapController.camera.center.longitude)));
+              context.read<OrderBloc>().add(OrderPositionPicked(
+                  position: LatLng(mapController.camera.center.latitude,
+                      mapController.camera.center.longitude)));
 
               Navigator.of(context).pop();
             },

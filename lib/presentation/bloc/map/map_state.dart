@@ -37,3 +37,12 @@ final class MapPositionPicked extends MapState {
   @override
   List<Object> get props => [position];
 }
+
+final class AddressFromPosition extends MapState {
+  final String address;
+
+  AddressFromPosition(this.address);
+
+  @override
+  List<Object> get props => [address];
+}
