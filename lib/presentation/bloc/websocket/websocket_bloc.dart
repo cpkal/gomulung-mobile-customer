@@ -15,6 +15,7 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
     on<WebsocketDisconnect>(_onWebSocketDisconnect);
     on<WebsocketSend>(_onWebSocketSend);
     on<WebsocketReceive>(_onWebSocketReceive);
+    on<WebSocketMessageReceived>(_onWebSocketMessageReceived);
   }
 
   void _onWebSocketConnect(
@@ -22,6 +23,14 @@ class WebsocketBloc extends Bloc<WebsocketEvent, WebsocketState> {
     webSocketService.connect();
     print('connecting to ws');
     emit(WebsocketConnected('Connected to Websocket'));
+    webSocketService.onMessage((message) {
+      add(WebSocketMessageReceived(message));
+    });
+  }
+
+  void _onWebSocketMessageReceived(
+      WebSocketMessageReceived event, Emitter<WebsocketState> emit) {
+    emit(WebsocketReceived(event.message));
   }
 
   void _onWebSocketSend(WebsocketSend event, Emitter<WebsocketState> emit) {

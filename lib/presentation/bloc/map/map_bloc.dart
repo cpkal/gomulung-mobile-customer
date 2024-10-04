@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:las_customer/data/datasource/remote/nominatim_service.dart';
+import 'package:las_customer/data/datasource/remote/osrm_service.dart';
 import 'package:latlong2/latlong.dart';
 
 part 'map_event.dart';
@@ -49,6 +50,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
       emit(AddressFromPosition(address));
     });
+
+    on<GetPolyline>(_onGetPolyline);
   }
 
   Future _locationPermission() async {
@@ -92,5 +95,23 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     )).then((value) {
       return value;
     });
+  }
+
+  void _onGetPolyline(GetPolyline event, Emitter<MapState> emit) async {
+    emit(MapLoading());
+    OsrmService osrmService = OsrmService();
+    final polyline = await osrmService.getPolyline(
+        event.origin.latitude,
+        event.origin.longitude,
+        event.destination.latitude,
+        event.destination.longitude);
+
+    //polyline to list of LatLng
+    List<LatLng> polylineLatLng = [];
+    for (var i = 0; i < polyline.length; i++) {
+      polylineLatLng.add(LatLng(polyline[i][1], polyline[i][0]));
+    }
+
+    emit(PolylineLoaded(polylineLatLng));
   }
 }

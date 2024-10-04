@@ -28,3 +28,12 @@ final class WebsocketReceive extends WebsocketEvent {
   @override
   List<Object> get props => [message];
 }
+
+final class WebSocketMessageReceived extends WebsocketEvent {
+  final String message;
+
+  WebSocketMessageReceived(this.message);
+
+  @override
+  List<Object> get props => [message];
+}

@@ -89,7 +89,7 @@ class _OrderPageState extends State<OrderPage> {
 
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
-                      screen: FindDriverPage(),
+                      screen: FindDriverPage(order: state.order),
                       withNavBar: false,
                     );
                   } else if (state is OrderFailed) {

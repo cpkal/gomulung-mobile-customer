@@ -46,3 +46,12 @@ final class AddressFromPosition extends MapState {
   @override
   List<Object> get props => [address];
 }
+
+final class PolylineLoaded extends MapState {
+  final List<LatLng> polyline;
+
+  PolylineLoaded(this.polyline);
+
+  @override
+  List<Object> get props => [polyline];
+}

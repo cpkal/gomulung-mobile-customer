@@ -34,11 +34,7 @@ class MyAccountPage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 20),
-            Container(
-              height: 10,
-              decoration: BoxDecoration(color: Colors.grey.shade300),
-            ),
-            SizedBox(height: 20),
+
             //list menu
             Container(
               padding: EdgeInsets.symmetric(horizontal: 20),
@@ -56,51 +52,60 @@ class MyAccountPage extends StatelessWidget {
                   //     ],
                   //   ),
                   // ),
-
+                  SizedBox(
+                    height: 20,
+                  ),
                   InkWell(
                     onTap: () {},
-                    child: Row(
-                      children: [
-                        Icon(Icons.shopping_cart),
-                        SizedBox(
-                          width: 10,
+                    child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(100),
                         ),
-                        Text('Histori Pesanan'),
-                      ],
-                    ),
+                        child: Center(
+                          child: Text('Akun saya'),
+                        )),
                   ),
                   SizedBox(
                     height: 20,
                   ),
                   InkWell(
                     onTap: () {},
-                    child: Row(
-                      children: [
-                        Icon(Icons.help),
-                        SizedBox(
-                          width: 10,
+                    child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(100),
                         ),
-                        Text('Bantuan'),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: Row(
-                      children: [
-                        Icon(Icons.logout),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text('Keluar'),
-                      ],
-                    ),
+                        child: Center(
+                          child: Text('Histori pesanan'),
+                        )),
                   ),
                 ],
               ),
+            ),
+            SizedBox(height: 20),
+            Container(
+              height: 5,
+              decoration: BoxDecoration(color: Colors.grey.shade300),
+            ),
+            SizedBox(height: 20),
+            SizedBox(
+              height: 20,
+            ),
+            InkWell(
+              onTap: () {},
+              child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  padding: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Center(
+                    child: Text('Keluar'),
+                  )),
             ),
           ],
         ),

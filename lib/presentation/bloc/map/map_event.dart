@@ -35,3 +35,13 @@ class GetAddressFromPosition extends MapEvent {
   @override
   List<Object> get props => [position];
 }
+
+class GetPolyline extends MapEvent {
+  final LatLng origin;
+  final LatLng destination;
+
+  GetPolyline(this.origin, this.destination);
+
+  @override
+  List<Object> get props => [origin, destination];
+}
