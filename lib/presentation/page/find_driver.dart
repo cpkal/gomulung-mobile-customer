@@ -30,6 +30,10 @@ class _FindDriverPageState extends State<FindDriverPage> {
     //timeout 3 seconds until las crew found
     // context.read<WebsocketBloc>().add(WebsocketReceive('Listening to message'));
 
+    context
+        .read<CrewBloc>()
+        .add(CheckIsCrewAssigned(widget.order.id.toString()));
+
     super.initState();
   }
 

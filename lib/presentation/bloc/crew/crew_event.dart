@@ -15,3 +15,12 @@ class GetCrewInfo extends CrewEvent {
   @override
   List<Object> get props => [crewId];
 }
+
+class CheckIsCrewAssigned extends CrewEvent {
+  final String orderId;
+
+  CheckIsCrewAssigned(this.orderId);
+
+  @override
+  List<Object> get props => [orderId];
+}

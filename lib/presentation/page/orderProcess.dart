@@ -14,7 +14,7 @@ class OrderProcessPage extends StatefulWidget {
 class _OrderProcessPageState extends State<OrderProcessPage> {
   @override
   void initState() {
-    context.read<OrderBloc>().add(FetchOrders());
+    // context.read<OrderBloc>().add(FetchOrders());
     // TODO: implement initState
     super.initState();
   }

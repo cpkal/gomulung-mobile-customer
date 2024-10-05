@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/myaccount.dart';
 import 'package:las_customer/presentation/page/order.dart';
@@ -28,6 +29,11 @@ class _SubRootPageState extends State<SubRootPage> {
     return PersistentTabView(
       context,
       controller: _controller,
+      onItemSelected: (value) {
+        if (value == 1) {
+          context.read<OrderBloc>().add(FetchOrders());
+        }
+      },
       screens: _buildScreens(),
       items: _navBarsItems(context),
       handleAndroidBackButtonPress: true, // Default is true.

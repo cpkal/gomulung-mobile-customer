@@ -37,13 +37,13 @@ class TakePictureTrash extends StatelessWidget {
               // ignore: unnecessary_null_comparison
               image == null
                   ? Text(
-                      'Ambil foto',
+                      'Ambil',
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             color: Colors.grey,
                           ),
                     )
                   : Text(
-                      'Ganti foto',
+                      'Ganti',
                       style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                             color: Colors.grey,
                           ),

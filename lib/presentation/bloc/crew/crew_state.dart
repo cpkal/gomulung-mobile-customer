@@ -28,3 +28,12 @@ final class CrewError extends CrewState {
   @override
   List<Object> get props => [message];
 }
+
+class CheckIsCrewAssignedLoaded extends CrewState {
+  final bool isAssigned;
+
+  CheckIsCrewAssignedLoaded(this.isAssigned);
+
+  @override
+  List<Object> get props => [isAssigned];
+}

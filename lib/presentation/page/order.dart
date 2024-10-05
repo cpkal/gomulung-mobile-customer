@@ -101,47 +101,52 @@ class _OrderPageState extends State<OrderPage> {
                   }
                 },
                 builder: (context, state) {
-                  return Column(
-                    children: [
-                      Expanded(
-                        // height: 130,
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              PickLocation(),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              TakePictureTrash(
-                                  image: _image, onTap: _getImageFromCamera),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              SelectTotalWeight(
-                                onTap: () {
-                                  setState(() {
-                                    _showTotalWeight = !_showTotalWeight;
-                                  });
-                                },
-                                state: state,
-                              ),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              SelectTrashType(),
-                              SizedBox(height: 20),
-                              SelectPaymentMethod(onTap: () {}),
-                              SizedBox(
-                                height: 20,
-                              ),
-                              ShowRingkasanAngkutan(),
-                            ],
+                  return Container(
+                    height: MediaQuery.of(context).size.height,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                PickLocation(),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                TakePictureTrash(
+                                    image: _image, onTap: _getImageFromCamera),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                SelectTotalWeight(
+                                  onTap: () {
+                                    setState(() {
+                                      _showTotalWeight = !_showTotalWeight;
+                                    });
+                                  },
+                                  state: state,
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                SelectTrashType(),
+                                SizedBox(height: 20),
+                                SelectPaymentMethod(onTap: () {}),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                ShowRingkasanAngkutan(),
+                              ],
+                            ),
                           ),
-                        ),
+                          SizedBox(
+                            height: 100,
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   );
                 },
               ),
@@ -151,7 +156,7 @@ class _OrderPageState extends State<OrderPage> {
                 left: 20,
                 right: 20,
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 20.0),
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: ElevatedButton(
                     onPressed: () => _handleSubmit(context),
                     child: SizedBox(
