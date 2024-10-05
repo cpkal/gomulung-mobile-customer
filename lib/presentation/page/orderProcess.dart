@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
+import 'package:las_customer/presentation/page/find_driver.dart';
 import 'package:las_customer/presentation/page/map.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
@@ -34,50 +35,60 @@ class _OrderProcessPageState extends State<OrderProcessPage> {
                   //foreach order
 
                   for (var order in state.orders)
-                    Container(
-                      margin: EdgeInsets.only(bottom: 20),
-                      //border radius
-                      width: MediaQuery.of(context).size.width,
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                order.grandTotal.toString(),
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .headlineMedium!
-                                    .copyWith(fontWeight: FontWeight.bold),
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text('Driver. Jajang Noer'),
-                                  Text('B 1234 ABC'),
-                                ],
-                              )
-                            ],
+                    GestureDetector(
+                      onTap: () {
+                        PersistentNavBarNavigator.pushNewScreen(
+                          context,
+                          screen: FindDriverPage(
+                            order: order,
                           ),
-
-                          //border separator
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            height: 1,
+                        );
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(bottom: 20),
+                        //border radius
+                        width: MediaQuery.of(context).size.width,
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
                             color: Colors.grey,
+                            width: 1,
                           ),
-                          //menuju lokasi
-                          Text('Driver sedang menuju lokasi kamu'),
-                        ],
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  order.grandTotal.toString(),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium!
+                                      .copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text('Driver. Jajang Noer'),
+                                    Text('B 1234 ABC'),
+                                  ],
+                                )
+                              ],
+                            ),
+
+                            //border separator
+                            Container(
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            //menuju lokasi
+                            Text('Driver sedang menuju lokasi kamu'),
+                          ],
+                        ),
                       ),
                     ),
 

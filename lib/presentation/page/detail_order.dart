@@ -12,7 +12,9 @@ import 'package:latlong2/latlong.dart';
 
 class FindDriverPage extends StatefulWidget {
   Order order;
-  FindDriverPage({Key? key, required this.order}) : super(key: key);
+  bool? isFromOrderProcessses;
+  FindDriverPage({Key? key, required this.order, this.isFromOrderProcessses})
+      : super(key: key);
 
   @override
   _FindDriverPageState createState() => _FindDriverPageState();
@@ -27,6 +29,12 @@ class _FindDriverPageState extends State<FindDriverPage> {
 
   @override
   void initState() {
+    if (widget.isFromOrderProcessses != null) {
+      setState(() {
+        isCrewFound = true;
+      });
+    }
+
     //timeout 3 seconds until las crew found
     // context.read<WebsocketBloc>().add(WebsocketReceive('Listening to message'));
 
@@ -43,44 +51,27 @@ class _FindDriverPageState extends State<FindDriverPage> {
     return BlocConsumer<WebsocketBloc, WebsocketState>(
       listener: (context, state) {
         if (state is WebsocketReceived) {
+          setState(() {
+            isCrewFound = true;
+          });
+
           //decode message
           var data = jsonDecode(state.message);
 
-          if (data['event'] == 'order_accepted') {
-            setState(() {
-              isCrewFound = true;
-            });
+          setState(() {
+            crewLocation = LatLng(
+              data['crew_location']['lat'],
+              data['crew_location']['long'],
+            );
+          });
 
-            setState(() {
-              crewLocation = LatLng(
-                data['crew_location']['lat'],
-                data['crew_location']['long'],
-              );
-            });
-
-            context
-                .read<CrewBloc>()
-                .add(GetCrewInfo(data['crew_id'].toString()));
-
-            // context.read
-            //get polyline from user location to crew location
-            context.read<MapBloc>().add(GetPolyline(
-                LatLng(widget.order.pickupLocation!.coordinates![1],
-                    widget.order.pickupLocation!.coordinates![0]),
-                crewLocation!));
-          } else if (data['event'] == 'crew_location_updated' &&
-              data['order_id'] == widget.order.id) {
-            setState(() {
-              crewLocation = LatLng(
-                data['location']['lat'],
-                data['location']['long'],
-              );
-            });
-          } else if (data['event'] == 'order_done' &&
-              data['order_id'] == widget.order.id) {
-            print('order done');
-            Navigator.of(context).pop();
-          }
+          context.read<CrewBloc>().add(GetCrewInfo(data['crew_id'].toString()));
+          // context.read
+          //get polyline from user location to crew location
+          context.read<MapBloc>().add(GetPolyline(
+              LatLng(widget.order.pickupLocation!.coordinates![1],
+                  widget.order.pickupLocation!.coordinates![0]),
+              crewLocation!));
         }
       },
       builder: (context, state) {
@@ -182,9 +173,7 @@ class _FindDriverPageState extends State<FindDriverPage> {
                   );
                 },
               ),
-              isCrewFound
-                  ? _buildPanelOnOrderProcess()
-                  : _buildPanelCancelOrder(),
+              _buildPanelOnOrderProcess()
             ],
           ),
         );

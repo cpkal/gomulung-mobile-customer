@@ -67,8 +67,6 @@ class _OrderPageState extends State<OrderPage> {
               BlocConsumer<OrderBloc, OrderState>(
                 listener: (context, state) {
                   if (state is OrderSuccess) {
-                    context.read<WebsocketBloc>().add(WebsocketConnect());
-
                     Map<String, dynamic> message = {
                       "event": "request_order",
                       "data": {
@@ -80,6 +78,8 @@ class _OrderPageState extends State<OrderPage> {
                         "order_id": state.order.id,
                       }
                     };
+
+                    print(message);
 
                     String jsonString = jsonEncode(message);
 

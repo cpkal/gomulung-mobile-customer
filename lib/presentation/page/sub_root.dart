@@ -1,19 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:las_customer/core/route/route_paths.dart';
-import 'package:las_customer/data/datasource/remote/web_socket_service.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
-import 'package:las_customer/presentation/page/map.dart';
 import 'package:las_customer/presentation/page/myaccount.dart';
 import 'package:las_customer/presentation/page/order.dart';
 import 'package:las_customer/presentation/page/orderProcess.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
-class SubRootPage extends StatelessWidget {
-  SubRootPage({super.key});
+class SubRootPage extends StatefulWidget {
+  @override
+  _SubRootPageState createState() => _SubRootPageState();
+}
+
+class _SubRootPageState extends State<SubRootPage> {
+  _SubRootPageState();
 
   final PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
+
+  @override
+  void initState() {
+    context.read<WebsocketBloc>().add(WebsocketConnect());
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

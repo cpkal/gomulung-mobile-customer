@@ -18,6 +18,7 @@ class WebSocketService {
 
   void send(String message) {
     // Send a message to the WebSocket server
+    print('dari service $message');
     _channel.sink.add(message);
   }
 
