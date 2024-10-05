@@ -11,7 +11,7 @@ part 'order_event.dart';
 part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
-  OrderBloc() : super(OrderState()) {
+  OrderBloc() : super(OrderState(payment_method: 'TUNAI')) {
     on<OrderPositionPicked>((event, emit) {
       print('ini dari order ${event.position}');
       emit(state.copyWith(position: event.position));
@@ -38,20 +38,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     on<OrderSubmitted>(_onOrderSubmitted);
     on<FetchOrders>(_onFetchOrders);
+    on<OrderCanceled>(_onOrderCanceled);
   }
 
   void _onOrderSubmitted(OrderSubmitted event, Emitter<OrderState> emit) async {
     // print(state);
-    //validate data
-    // if (state.position == null ||
-    //     state.weight_type == null ||
-    //     state.image_path == null ||
-    //     state.trash_type == null ||
-    //     state.payment_method == null) {
-    //   print('something is missing');
-    //   emit(OrderFailed());
-    //   return;
-    // }
 
     await ApiService.postData('/orders', {
       'sub_total': 10000.toString(),
@@ -76,7 +67,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     emit(OrderLoading());
     await ApiService.fetchData('/orders').then((res) {
       final orders = jsonDecode(res.body) as List;
+
+      if (orders.isEmpty) {
+        emit(OrdersEmpty());
+        return;
+      }
+
       emit(OrdersLoaded(orders.map((order) => Order.fromJson(order)).toList()));
+    }).catchError((err) => emit(OrderFailed()));
+  }
+
+  void _onOrderCanceled(OrderCanceled event, Emitter<OrderState> emit) async {
+    await ApiService.deleteData('/orders/${event.id}').then((res) {
+      emit(OrderCanceledSuccess());
     }).catchError((err) => emit(OrderFailed()));
   }
 }

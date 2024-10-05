@@ -73,3 +73,7 @@ final class OrdersLoaded extends OrderState {
 }
 
 final class OrderLoading extends OrderState {}
+
+final class OrdersEmpty extends OrderState {}
+
+final class OrderCanceledSuccess extends OrderState {}

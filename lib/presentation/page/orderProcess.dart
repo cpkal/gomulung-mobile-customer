@@ -1,23 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/page/find_driver.dart';
-import 'package:las_customer/presentation/page/map.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
-class OrderProcessPage extends StatefulWidget {
-  @override
-  _OrderProcessPageState createState() => _OrderProcessPageState();
-}
-
-class _OrderProcessPageState extends State<OrderProcessPage> {
-  @override
-  void initState() {
-    // context.read<OrderBloc>().add(FetchOrders());
-    // TODO: implement initState
-    super.initState();
-  }
+class OrderProcessPage extends StatelessWidget {
+  OrderProcessPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -25,15 +13,19 @@ class _OrderProcessPageState extends State<OrderProcessPage> {
       appBar: AppBar(
         title: Text('Pesanan kamu'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
-        child: BlocBuilder<OrderBloc, OrderState>(
-          builder: (context, state) {
-            if (state is OrdersLoaded) {
-              return Column(
-                children: [
-                  //foreach order
+      body: BlocBuilder<OrderBloc, OrderState>(
+        builder: (context, state) {
+          if (state is OrdersEmpty) {
+            return const Center(
+              child: Text('Kamu belum memiliki pesanan'),
+            );
+          }
 
+          if (state is OrdersLoaded) {
+            return SingleChildScrollView(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: [
                   for (var order in state.orders)
                     GestureDetector(
                       onTap: () {
@@ -135,14 +127,14 @@ class _OrderProcessPageState extends State<OrderProcessPage> {
                   //   ),
                   // )
                 ],
-              );
-            }
-
-            return Center(
-              child: CircularProgressIndicator(),
+              ),
             );
-          },
-        ),
+          }
+
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        },
       ),
     );
   }

@@ -3,10 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/widget/orders/panel/order_panel.dart';
 
-class SelectTotalWeightPanel extends StatelessWidget {
+class SelectWeightTypePanel extends StatelessWidget {
   final Function() onTap;
 
-  const SelectTotalWeightPanel({required this.onTap});
+  const SelectWeightTypePanel({required this.onTap});
 
   @override
   Widget build(BuildContext context) {

@@ -7,11 +7,12 @@ import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/data/model/order.dart';
 import 'package:las_customer/presentation/bloc/crew/crew_bloc.dart';
 import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
+import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:latlong2/latlong.dart';
 
 class FindDriverPage extends StatefulWidget {
-  Order order;
+  final Order order;
   FindDriverPage({Key? key, required this.order}) : super(key: key);
 
   @override
@@ -220,6 +221,16 @@ class _FindDriverPageState extends State<FindDriverPage> {
               foregroundColor: Theme.of(context).colorScheme.error,
             ),
             onPressed: () {
+              context.read<WebsocketBloc>().add(
+                    WebsocketSend(
+                      jsonEncode(
+                        {
+                          'event': 'order_canceled',
+                          'data': {'order_id': widget.order.id}
+                        },
+                      ),
+                    ),
+                  );
               Navigator.of(context).pop();
             },
             child: Text('Batalkan pesanan'),

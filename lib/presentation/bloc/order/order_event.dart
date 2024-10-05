@@ -64,3 +64,12 @@ class OrderAddressChanged extends OrderEvent {
   @override
   List<Object> get props => [address];
 }
+
+class OrderCanceled extends OrderEvent {
+  final String id;
+
+  OrderCanceled(this.id);
+
+  @override
+  List<Object> get props => [id];
+}

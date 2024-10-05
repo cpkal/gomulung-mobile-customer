@@ -7,7 +7,7 @@ import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/find_driver.dart';
 import 'package:las_customer/presentation/widget/orders/panel/select_payment_method_panel.dart';
-import 'package:las_customer/presentation/widget/orders/panel/select_total_weight_panel.dart';
+import 'package:las_customer/presentation/widget/orders/panel/select_weight_type.dart';
 import 'package:las_customer/presentation/widget/orders/pick_location.dart';
 import 'package:las_customer/presentation/widget/orders/select_payment_method.dart';
 import 'package:las_customer/presentation/widget/orders/select_total_weight.dart';
@@ -23,8 +23,8 @@ class OrderPage extends StatefulWidget {
 }
 
 class _OrderPageState extends State<OrderPage> {
-  late bool _showPaymentMethod = false;
-  late bool _showTotalWeight = false;
+  late bool _showPaymentMethodPanel = false;
+  late bool _showSelectedWeightTypePanel = false;
 
   File? _image;
   final ImagePicker _picker = ImagePicker();
@@ -35,13 +35,27 @@ class _OrderPageState extends State<OrderPage> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
+        context.read<OrderBloc>().add(OrderImagePathChanged(_image!.path));
       } else {
         print('No image selected.');
       }
     });
   }
 
-  void _handleSubmit(BuildContext context) {
+  void _handleSubmit(BuildContext context, OrderState state) {
+    if (state.address == null ||
+        state.position == null ||
+        state.weight_type == null ||
+        state.trash_type == null ||
+        state.payment_method == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Isi form yang dibutuhkan'),
+        ),
+      );
+      return;
+    }
+
     context.read<OrderBloc>().add(OrderSubmitted());
   }
 
@@ -67,21 +81,7 @@ class _OrderPageState extends State<OrderPage> {
               BlocConsumer<OrderBloc, OrderState>(
                 listener: (context, state) {
                   if (state is OrderSuccess) {
-                    Map<String, dynamic> message = {
-                      "event": "request_order",
-                      "data": {
-                        "user_id": state.order.userId,
-                        "pickup_location": {
-                          "lat": state.order.pickupLocation!.coordinates?[1],
-                          "long": state.order.pickupLocation!.coordinates?[0]
-                        },
-                        "order_id": state.order.id,
-                      }
-                    };
-
-                    print(message);
-
-                    String jsonString = jsonEncode(message);
+                    String jsonString = _encodeRequestOrderMessage(state);
 
                     context
                         .read<WebsocketBloc>()
@@ -123,7 +123,8 @@ class _OrderPageState extends State<OrderPage> {
                                 SelectTotalWeight(
                                   onTap: () {
                                     setState(() {
-                                      _showTotalWeight = !_showTotalWeight;
+                                      _showSelectedWeightTypePanel =
+                                          !_showSelectedWeightTypePanel;
                                     });
                                   },
                                   state: state,
@@ -158,7 +159,8 @@ class _OrderPageState extends State<OrderPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: ElevatedButton(
-                    onPressed: () => _handleSubmit(context),
+                    onPressed: () =>
+                        _handleSubmit(context, context.read<OrderBloc>().state),
                     child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.8,
                         child: Row(
@@ -174,8 +176,8 @@ class _OrderPageState extends State<OrderPage> {
               ),
 
               //panel to select payment method
-              if (_showPaymentMethod) _buildPaymentMethodPanel(),
-              if (_showTotalWeight) _buildTotalWeightPanel(),
+              if (_showPaymentMethodPanel) _buildPaymentMethodPanel(),
+              if (_showSelectedWeightTypePanel) _buildSelectWeightPanel(),
             ],
           );
         },
@@ -186,16 +188,30 @@ class _OrderPageState extends State<OrderPage> {
   Widget _buildPaymentMethodPanel() {
     return SelectPaymentMethodPanel(onPressed: () {
       setState(() {
-        _showPaymentMethod = false;
+        _showPaymentMethodPanel = false;
       });
     });
   }
 
-  Widget _buildTotalWeightPanel() {
-    return SelectTotalWeightPanel(onTap: () {
+  Widget _buildSelectWeightPanel() {
+    return SelectWeightTypePanel(onTap: () {
       setState(() {
-        _showTotalWeight = false;
+        _showSelectedWeightTypePanel = false;
       });
+    });
+  }
+
+  String _encodeRequestOrderMessage(OrderSuccess state) {
+    return jsonEncode({
+      "event": "request_order",
+      "data": {
+        "user_id": state.order.userId,
+        "pickup_location": {
+          "lat": state.order.pickupLocation!.coordinates?[1],
+          "long": state.order.pickupLocation!.coordinates?[0]
+        },
+        "order_id": state.order.id,
+      }
     });
   }
 }

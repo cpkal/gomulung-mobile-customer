@@ -31,7 +31,7 @@ class LoginPage extends StatelessWidget {
           } else if (state is LoginFailed) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Gagal masuk'),
+                content: Text('Email atau password salah'),
               ),
             );
           }

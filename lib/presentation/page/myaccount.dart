@@ -79,6 +79,21 @@ class MyAccountPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Center(
+                          child: Text('Ganti password'),
+                        )),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  InkWell(
+                    onTap: () {},
+                    child: Container(
+                        padding: EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Center(
                           child: Text('Histori pesanan'),
                         )),
                   ),

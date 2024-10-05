@@ -15,10 +15,10 @@ final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 class PageRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
-        return MaterialPageRoute(builder: (_) => OrderPage());
       case RoutePaths.askLoginOrRegister:
         return MaterialPageRoute(builder: (_) => AskLoginRegisterPage());
+      case RoutePaths.order:
+        return MaterialPageRoute(builder: (_) => OrderPage());
       case RoutePaths.login:
         return MaterialPageRoute(builder: (_) => LoginPage());
       case RoutePaths.registerInputAccount:
