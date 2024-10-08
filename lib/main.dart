@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/core/route/page_router.dart';
 import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/core/util/app_theme.dart';
+import 'package:las_customer/core/util/secure_storage.dart';
 import 'package:las_customer/data/datasource/remote/api_service.dart';
 import 'package:las_customer/data/datasource/remote/web_socket_service.dart';
 import 'package:las_customer/data/repository/authentication_repository.dart';
@@ -15,16 +16,22 @@ import 'package:las_customer/presentation/bloc/register/register_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+
+  final _secureStorage = SecureStorage();
+  var webSocketService;
 
   @override
   Widget build(BuildContext context) {
-    final webSocketService = WebSocketService('ws://10.0.2.2:3000');
-    // final ApiService = ApiService();
+    _secureStorage.readSecureData(key: 'token').then((value) {
+      print(value);
+      webSocketService = WebSocketService(
+          'ws://10.0.2.2:3000/socket?token=$value&role=customer');
+    });
 
     return MultiRepositoryProvider(
       providers: [

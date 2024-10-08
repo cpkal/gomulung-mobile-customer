@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
+import 'package:las_customer/presentation/page/detail_order_process.dart';
 import 'package:las_customer/presentation/page/find_driver.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
@@ -29,12 +30,22 @@ class OrderProcessPage extends StatelessWidget {
                   for (var order in state.orders)
                     GestureDetector(
                       onTap: () {
-                        PersistentNavBarNavigator.pushNewScreen(
-                          context,
-                          screen: FindDriverPage(
-                            order: order,
-                          ),
-                        );
+                        print(order.status);
+                        if (order.status == 'pending') {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: FindDriverPage(
+                              order: order,
+                            ),
+                          );
+                        } else if (order.status == 'in_progress') {
+                          PersistentNavBarNavigator.pushNewScreen(
+                            context,
+                            screen: DetailOrderProcess(
+                              order: order,
+                            ),
+                          );
+                        }
                       },
                       child: Container(
                         margin: EdgeInsets.only(bottom: 20),
