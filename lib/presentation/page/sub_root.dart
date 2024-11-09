@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
+import 'package:las_customer/presentation/page/home.dart';
 import 'package:las_customer/presentation/page/myaccount.dart';
 import 'package:las_customer/presentation/page/order.dart';
 import 'package:las_customer/presentation/page/orderProcess.dart';
@@ -67,7 +68,7 @@ class _SubRootPageState extends State<SubRootPage> {
 
 List<Widget> _buildScreens() {
   return [
-    OrderPage(),
+    HomePage(),
     OrderProcessPage(),
     MyAccountPage(),
   ];
@@ -76,9 +77,9 @@ List<Widget> _buildScreens() {
 List<PersistentBottomNavBarItem> _navBarsItems(BuildContext context) {
   return [
     PersistentBottomNavBarItem(
-      icon: Icon(Icons.pin_drop),
-      inactiveIcon: Icon(Icons.pin_drop_outlined),
-      title: ("Pesan"),
+      icon: Icon(Icons.home),
+      inactiveIcon: Icon(Icons.home_outlined),
+      title: ("Beranda"),
       activeColorPrimary: Theme.of(context).colorScheme.primary,
       inactiveColorPrimary: Theme.of(context).colorScheme.onSurface,
     ),

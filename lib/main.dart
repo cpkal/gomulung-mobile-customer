@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     _secureStorage.readSecureData(key: 'token').then((value) {
-      print(value);
       webSocketService = WebSocketService(
           'ws://10.0.2.2:3000/socket?token=$value&role=customer');
     });

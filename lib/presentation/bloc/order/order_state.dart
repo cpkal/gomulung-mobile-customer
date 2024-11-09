@@ -7,11 +7,8 @@ final class OrderState extends Equatable {
   String? image_path;
   Map<String, bool>? trash_type = {
     'Rumahan': false,
-    'Logam': false,
-    'Kertas': false,
-    'Pakaian': false,
-    'Kardus': false,
-    'Lainnya': false,
+    'Komersil': false,
+    'Pertanian': false,
   };
   String? payment_method;
 

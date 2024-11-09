@@ -63,7 +63,7 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('LAS'),
+        title: Text('Go Mulung'),
         actions: [
           IconButton(
             icon: const Icon(Icons.notifications_outlined),
@@ -72,7 +72,6 @@ class _OrderPageState extends State<OrderPage> {
             },
           ),
         ],
-        automaticallyImplyLeading: false,
       ),
       body: BlocBuilder<WebsocketBloc, WebsocketState>(
         builder: (context, state) {

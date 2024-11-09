@@ -41,61 +41,25 @@ class SelectTrashType extends StatelessWidget {
                         borderRadius: BorderRadius.circular(100),
                       ),
                       side: BorderSide(color: Colors.grey),
-                      label: Text('Plastik'),
+                      label: Text('Komersil'),
                       onSelected: (val) {
                         context
                             .read<OrderBloc>()
-                            .add(OrderTrashTypeChanged({'Plastik': val}));
+                            .add(OrderTrashTypeChanged({'Komersil': val}));
                       },
-                      selected: state.trash_type?['Plastik'] ?? false),
+                      selected: state.trash_type?['Komersil'] ?? false),
                   ChoiceChip(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
                       ),
                       side: BorderSide(color: Colors.grey),
-                      label: Text('Kertas'),
+                      label: Text('Pertanian'),
                       onSelected: (val) {
                         context
                             .read<OrderBloc>()
-                            .add(OrderTrashTypeChanged({'Kertas': val}));
+                            .add(OrderTrashTypeChanged({'Pertanian': val}));
                       },
-                      selected: state.trash_type?['Kertas'] ?? false),
-                  ChoiceChip(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      side: BorderSide(color: Colors.grey),
-                      label: Text('Pakaian'),
-                      onSelected: (val) {
-                        context
-                            .read<OrderBloc>()
-                            .add(OrderTrashTypeChanged({'Pakaian': val}));
-                      },
-                      selected: state.trash_type?['Pakaian'] ?? false),
-                  ChoiceChip(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      side: BorderSide(color: Colors.grey),
-                      label: Text('Kardus'),
-                      onSelected: (val) {
-                        context
-                            .read<OrderBloc>()
-                            .add(OrderTrashTypeChanged({'Kardus': val}));
-                      },
-                      selected: state.trash_type?['Kardus'] ?? false),
-                  ChoiceChip(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                      side: BorderSide(color: Colors.grey),
-                      label: Text('Lainnya'),
-                      onSelected: (val) {
-                        context
-                            .read<OrderBloc>()
-                            .add(OrderTrashTypeChanged({'Lainnya': val}));
-                      },
-                      selected: state.trash_type?['Lainnya'] ?? false),
+                      selected: state.trash_type?['Pertanian'] ?? false),
                 ],
               )
             ],
