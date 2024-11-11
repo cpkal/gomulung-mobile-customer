@@ -43,11 +43,14 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   void _handleSubmit(BuildContext context, OrderState state) {
+    print(state.address);
+    print(state.position);
+    print(state.weight_type);
+    print(state.trash_type);
     if (state.address == null ||
         state.position == null ||
         state.weight_type == null ||
-        state.trash_type == null ||
-        state.payment_method == null) {
+        state.trash_type == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Isi form yang dibutuhkan'),
@@ -63,15 +66,7 @@ class _OrderPageState extends State<OrderPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Go Mulung'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {
-              // Navigator.pushNamed(context, RoutePaths.myAccount);
-            },
-          ),
-        ],
+        title: Text('Buang Sampah'),
       ),
       body: BlocBuilder<WebsocketBloc, WebsocketState>(
         builder: (context, state) {
@@ -88,7 +83,12 @@ class _OrderPageState extends State<OrderPage> {
 
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
-                      screen: FindDriverPage(order: state.order),
+                      screen: BlocProvider.value(
+                        value: context.read<WebsocketBloc>(),
+                        child: FindDriverPage(
+                          order: state.order,
+                        ),
+                      ),
                       withNavBar: false,
                     );
                   } else if (state is OrderFailed) {

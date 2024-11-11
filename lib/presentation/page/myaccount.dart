@@ -1,9 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_customer/core/util/secure_storage.dart';
 import 'package:las_customer/presentation/page/login.dart';
 
 class MyAccountPage extends StatelessWidget {
-  const MyAccountPage({Key? key}) : super(key: key);
+  MyAccountPage({Key? key}) : super(key: key);
+
+  final _secureStorage = SecureStorage();
+
+  Future<void> _logout(BuildContext context) async {
+    // await context.read<AuthBloc>().add(AuthLogoutRequested());
+    await _secureStorage.deleteSecureData(key: 'token');
+
+    Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => LoginPage()),
+        (Route<dynamic> route) => false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,7 +122,7 @@ class MyAccountPage extends StatelessWidget {
               height: 20,
             ),
             InkWell(
-              onTap: () {},
+              onTap: () => _logout(context),
               child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   padding: EdgeInsets.all(5),

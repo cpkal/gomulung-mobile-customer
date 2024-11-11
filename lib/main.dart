@@ -14,23 +14,63 @@ import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/register/register_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
+import 'package:las_customer/presentation/page/ask_login_register.dart';
+import 'package:las_customer/presentation/page/sub_root.dart';
 
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
   final _secureStorage = SecureStorage();
-  var webSocketService;
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+  bool isAuthenticated = false;
+  bool isTokenReaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthentication();
+  }
+
+  Future<void> _checkAuthentication() async {
+    String? value = await _secureStorage.readSecureData(key: 'token');
+
+    if (value != null) {
+      final response =
+          await ApiService.postData('/auth/verify-token-expiration', {
+        'token': value,
+      });
+
+      if (response.statusCode == 200) {
+        setState(() {
+          isAuthenticated = true;
+        });
+      }
+    }
+
+    setState(() {
+      isTokenReaded = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    _secureStorage.readSecureData(key: 'token').then((value) {
-      webSocketService = WebSocketService(
-          'ws://10.0.2.2:3000/socket?token=$value&role=customer');
-    });
+    if (!isTokenReaded) {
+      return MaterialApp(
+        home: Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
+      );
+    }
 
     return MultiRepositoryProvider(
       providers: [
@@ -51,13 +91,14 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(create: (context) => MapBloc()),
           BlocProvider(create: (context) => OrderBloc()),
-          BlocProvider(create: (context) => WebsocketBloc(webSocketService)),
           BlocProvider(create: (context) => CrewBloc())
         ],
         child: MaterialApp(
           title: 'LAS Customer Application',
           theme: appTheme(),
-          initialRoute: RoutePaths.askLoginOrRegister,
+          initialRoute: isAuthenticated
+              ? RoutePaths.subRoot
+              : RoutePaths.askLoginOrRegister,
           onGenerateRoute: PageRouter.generateRoute,
           navigatorObservers: [routeObserver],
         ),

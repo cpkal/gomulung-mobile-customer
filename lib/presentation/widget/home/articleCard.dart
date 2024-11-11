@@ -24,16 +24,25 @@ class ArticleCard extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              width: 200,
-              height: 100,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(15),
-                  topRight: Radius.circular(15),
+                width: 200,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15),
+                  ),
                 ),
-              ),
-            ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(15),
+                    topRight: Radius.circular(15),
+                  ),
+                  child: Image.network(
+                    'https://pendowoharjo.bantulkab.go.id/assets/files/artikel/sedang_1654009631IMG20220531WA0014.jpg',
+                    fit: BoxFit.cover,
+                  ),
+                )),
             Container(
               padding: EdgeInsets.all(10),
               child: Column(

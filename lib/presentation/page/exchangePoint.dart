@@ -41,68 +41,11 @@ class ExchangePointPage extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  //grid  pilihan e-wallet
-                  GridView.count(
-                      crossAxisCount: 4,
-                      //padding: EdgeInsets.all(10),
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                      shrinkWrap: true,
-                      children: [
-                        //e-wallet
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.network(
-                                  "https://cdn.freelogovectors.net/wp-content/uploads/2023/10/gopay-logo-01-freelogovectors.net_.png"),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.network(
-                                  "https://cdn.freelogovectors.net/wp-content/uploads/2023/10/gopay-logo-01-freelogovectors.net_.png"),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.network(
-                                  "https://cdn.freelogovectors.net/wp-content/uploads/2023/10/gopay-logo-01-freelogovectors.net_.png"),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Image.network(
-                                  "https://cdn.freelogovectors.net/wp-content/uploads/2023/10/gopay-logo-01-freelogovectors.net_.png"),
-                            ],
-                          ),
-                        ),
-                      ]),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Bank Tujuan',
+                    ),
+                  ),
                 ],
               ),
             ),

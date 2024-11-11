@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:las_customer/presentation/widget/orders/order_card.dart';
+import 'package:las_customer/presentation/widget/orders/panel/order_panel.dart';
 import 'package:las_customer/presentation/widget/orders/pick_location.dart';
 import 'package:las_customer/presentation/widget/orders/show_ringkasan_angkutan.dart';
 
-class SellTrashPage extends StatelessWidget {
+class SellTrashPage extends StatefulWidget {
+  @override
+  _SellTrashPageState createState() => _SellTrashPageState();
+}
+
+class _SellTrashPageState extends State<SellTrashPage> {
+  bool isSelectTrashPanelOpen = false;
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -62,7 +70,6 @@ class SellTrashPage extends StatelessWidget {
                         )
                       ],
                     ),
-//container row of trash
                     Row(
                       children: [
                         Expanded(
@@ -112,7 +119,9 @@ class SellTrashPage extends StatelessWidget {
                     //button add trash
                     ElevatedButton(
                       onPressed: () {
-                        //add new row of trash
+                        setState(() {
+                          isSelectTrashPanelOpen = true;
+                        });
                       },
                       child: Icon(Icons.add),
                     ),
@@ -143,7 +152,255 @@ class SellTrashPage extends StatelessWidget {
               ),
             ),
           ),
+
+          //select trash panel
+          if (isSelectTrashPanelOpen) _buildSelectTrashPanel(),
         ],
+      ),
+    );
+  }
+
+  Widget _buildSelectTrashPanel() {
+    return OrderPanel(
+      heightRatio: 0.8,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //close button
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Sampah Plastik',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  onPressed: () {
+                    setState(() {
+                      isSelectTrashPanelOpen = false;
+                    });
+                  },
+                  icon: Icon(Icons.close),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            //list view sampah-sampah plastik
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: EdgeInsets.only(top: 5),
+                  child: OrderCard(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Icon(Icons.shopping_bag_rounded),
+                      Text('Gelas minuman bening'),
+                      Row(
+                        children: [
+                          //increment and decrement
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.remove),
+                          ),
+                          Text('1 Kg'),
+                          IconButton(
+                            onPressed: () {},
+                            icon: Icon(Icons.add),
+                          ),
+                        ],
+                      )
+                    ],
+                  )),
+                );
+              },
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              'Sampah Kertas',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            //list view sampah-sampah plastik
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return OrderCard(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('PET Botol'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('1 Kg'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('Rp. 8.000'),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            Text(
+              'Sampah Logam',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            //list view sampah-sampah plastik
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return OrderCard(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('PET Botol'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('1 Kg'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('Rp. 8.000'),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            Text(
+              'Sampah Kaca',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            //list view sampah-sampah plastik
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return OrderCard(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('PET Botol'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('1 Kg'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('Rp. 8.000'),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+
+            Text(
+              'Sampah Lainnya',
+              style: Theme.of(context)
+                  .textTheme
+                  .headlineLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            //list view sampah-sampah plastik
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: 3,
+              itemBuilder: (context, index) {
+                return OrderCard(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('PET Botol'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('1 Kg'),
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.all(10),
+                          child: Text('Rp. 8.000'),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

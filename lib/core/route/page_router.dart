@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:las_customer/core/route/route_paths.dart';
+import 'package:las_customer/core/util/secure_storage.dart';
 import 'package:las_customer/presentation/page/ask_login_register.dart';
 import 'package:las_customer/presentation/page/chat.dart';
 import 'package:las_customer/presentation/page/forgot_password.dart';
@@ -17,6 +18,7 @@ class PageRouter {
     switch (settings.name) {
       case RoutePaths.askLoginOrRegister:
         return MaterialPageRoute(builder: (_) => AskLoginRegisterPage());
+
       case RoutePaths.order:
         return MaterialPageRoute(builder: (_) => OrderPage());
       case RoutePaths.login:

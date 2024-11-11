@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:las_customer/core/route/route_paths.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/exchangePoint.dart';
 import 'package:las_customer/presentation/page/order.dart';
 import 'package:las_customer/presentation/page/sellTrash.dart';
@@ -12,11 +13,31 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
-            'Go Mulung',
-          ),
+          title: Image.asset('assets/images/logo.png', height: 50),
           actions: [
-            Text('Poin: 1000'),
+            GestureDetector(
+              onTap: () {
+                PersistentNavBarNavigator.pushNewScreen(
+                  context,
+                  screen: ExchangePointPage(),
+                  withNavBar: false,
+                );
+              },
+              child: Padding(
+                padding: EdgeInsets.only(right: 20, top: 3),
+                child: Row(
+                  children: [
+                    Icon(Icons.confirmation_num_outlined,
+                        color: Theme.of(context).primaryColor),
+                    SizedBox(width: 8),
+                    Text('1000 Poin',
+                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Theme.of(context).primaryColor)),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
         body: SingleChildScrollView(
@@ -39,7 +60,9 @@ class HomePage extends StatelessWidget {
                     onTap: () {
                       PersistentNavBarNavigator.pushNewScreen(
                         context,
-                        screen: OrderPage(),
+                        screen: BlocProvider.value(
+                            value: context.read<WebsocketBloc>(),
+                            child: OrderPage()),
                         withNavBar: false,
                       );
                     },
@@ -52,6 +75,12 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Icon(
+                            Icons.pedal_bike_outlined,
+                            size: 44,
+                            color: Colors.white,
+                          ),
+                          SizedBox(height: 8),
                           Text(
                             'BUANG',
                             style: TextStyle(
@@ -79,6 +108,12 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Icon(
+                            Icons.shopping_cart_outlined,
+                            size: 44,
+                            color: Colors.white,
+                          ),
+                          SizedBox(height: 8),
                           Text(
                             'JUAL',
                             style: TextStyle(
@@ -106,6 +141,12 @@ class HomePage extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
+                          Icon(
+                            Icons.confirmation_num_outlined,
+                            size: 44,
+                            color: Colors.white,
+                          ),
+                          SizedBox(height: 8),
                           Text(
                             'TUKAR POIN',
                             style: TextStyle(

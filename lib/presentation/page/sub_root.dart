@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_customer/core/util/secure_storage.dart';
+import 'package:las_customer/data/datasource/remote/web_socket_service.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/home.dart';
@@ -16,6 +18,49 @@ class SubRootPage extends StatefulWidget {
 class _SubRootPageState extends State<SubRootPage> {
   _SubRootPageState();
 
+  final _secureStorage = SecureStorage();
+  var webSocketService;
+  bool isServiceInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeWebSocketService();
+  }
+
+  Future<void> _initializeWebSocketService() async {
+    String? token = await _secureStorage.readSecureData(key: 'token');
+    webSocketService = WebSocketService(
+        'ws://10.0.2.2:3000/socket?token=$token&role=customer');
+
+    setState(() {
+      isServiceInitialized = true; // Mark as initialized
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!isServiceInitialized) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    return BlocProvider(
+      create: (context) => WebsocketBloc(webSocketService),
+      child: SubRootChild(),
+    );
+  }
+}
+
+class SubRootChild extends StatefulWidget {
+  @override
+  _SubRootChildState createState() => _SubRootChildState();
+}
+
+class _SubRootChildState extends State<SubRootChild> {
   final PersistentTabController _controller =
       PersistentTabController(initialIndex: 0);
 
@@ -64,41 +109,41 @@ class _SubRootPageState extends State<SubRootPage> {
       navBarStyle: _navBarStyle,
     );
   }
-}
 
-List<Widget> _buildScreens() {
-  return [
-    HomePage(),
-    OrderProcessPage(),
-    MyAccountPage(),
-  ];
-}
+  List<Widget> _buildScreens() {
+    return [
+      HomePage(),
+      OrderProcessPage(),
+      MyAccountPage(),
+    ];
+  }
 
-List<PersistentBottomNavBarItem> _navBarsItems(BuildContext context) {
-  return [
-    PersistentBottomNavBarItem(
-      icon: Icon(Icons.home),
-      inactiveIcon: Icon(Icons.home_outlined),
-      title: ("Beranda"),
-      activeColorPrimary: Theme.of(context).colorScheme.primary,
-      inactiveColorPrimary: Theme.of(context).colorScheme.onSurface,
-    ),
-    PersistentBottomNavBarItem(
-      icon: Icon(Icons.map),
-      inactiveIcon: Icon(Icons.map_outlined),
-      title: ("Proses"),
-      activeColorPrimary: Theme.of(context).colorScheme.primary,
-      inactiveColorPrimary: Theme.of(context).colorScheme.onSurface,
-    ),
-    PersistentBottomNavBarItem(
-      icon: Icon(Icons.person),
-      inactiveIcon: Icon(Icons.person_outline),
-      title: ("Akun"),
-      activeColorPrimary: Theme.of(context).colorScheme.primary,
-      inactiveColorPrimary: Theme.of(context).colorScheme.onSurface,
-    ),
-  ];
-}
+  List<PersistentBottomNavBarItem> _navBarsItems(BuildContext context) {
+    return [
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.home),
+        inactiveIcon: Icon(Icons.home_outlined),
+        title: ("Beranda"),
+        activeColorPrimary: Theme.of(context).colorScheme.primary,
+        inactiveColorPrimary: Theme.of(context).colorScheme.onSurface,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.map),
+        inactiveIcon: Icon(Icons.map_outlined),
+        title: ("Proses"),
+        activeColorPrimary: Theme.of(context).colorScheme.primary,
+        inactiveColorPrimary: Theme.of(context).colorScheme.onSurface,
+      ),
+      PersistentBottomNavBarItem(
+        icon: Icon(Icons.person),
+        inactiveIcon: Icon(Icons.person_outline),
+        title: ("Akun"),
+        activeColorPrimary: Theme.of(context).colorScheme.primary,
+        inactiveColorPrimary: Theme.of(context).colorScheme.onSurface,
+      ),
+    ];
+  }
 
-NavBarStyle _navBarStyle =
-    NavBarStyle.style3; // Choose the nav bar style with this property
+  NavBarStyle _navBarStyle =
+      NavBarStyle.style3; // Choose the nav bar style with this property
+}

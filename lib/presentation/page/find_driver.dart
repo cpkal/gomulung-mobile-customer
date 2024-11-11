@@ -119,7 +119,7 @@ class _FindDriverPageState extends State<FindDriverPage> {
                 ),
                 child: isCrewFound
                     ? Text('Kru LAS ditemukan')
-                    : Text('Sedang mencari kru LAS'),
+                    : Text('Sedang mencari kru Go Mulung'),
               ), //  Custom title
               titleTextStyle: Theme.of(context).textTheme.headlineSmall),
           //map

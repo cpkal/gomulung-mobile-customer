@@ -11,7 +11,8 @@ part 'order_event.dart';
 part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
-  OrderBloc() : super(OrderState(payment_method: 'TUNAI')) {
+  OrderBloc()
+      : super(OrderState(payment_method: 'TUNAI', weight_type: 'Kecil')) {
     on<OrderPositionPicked>((event, emit) {
       print('ini dari order ${event.position}');
       emit(state.copyWith(position: event.position));
@@ -42,8 +43,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   }
 
   void _onOrderSubmitted(OrderSubmitted event, Emitter<OrderState> emit) async {
-    // print(state);
-
     await ApiService.postData('/orders', {
       'sub_total': 10000.toString(),
       'grand_total': 10000.toString(),
@@ -56,9 +55,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       'trash_weight_selection': state.weight_type,
       'trash_photo_path': 'NO IMAGE',
       'payment_method': 'TUNAI',
+      'feature_type': 'pickup',
     }).then((res) {
       final order = Order.fromJson(jsonDecode(res.body));
-
       emit(OrderSuccess(order));
     }).catchError((err) => emit(OrderFailed()));
   }
