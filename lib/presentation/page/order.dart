@@ -63,6 +63,13 @@ class _OrderPageState extends State<OrderPage> {
   }
 
   @override
+  void didUpdateWidget(covariant OrderPage oldWidget) {
+    // TODO: implement didUpdateWidget
+    super.didUpdateWidget(oldWidget);
+    print('running pt2');
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -132,8 +139,8 @@ class _OrderPageState extends State<OrderPage> {
                                   height: 20,
                                 ),
                                 SelectTrashType(),
-                                SizedBox(height: 20),
-                                SelectPaymentMethod(onTap: () {}),
+                                // SizedBox(height: 20),
+                                // SelectPaymentMethod(onTap: () {}),
                                 SizedBox(
                                   height: 20,
                                 ),

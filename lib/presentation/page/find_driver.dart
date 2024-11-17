@@ -310,14 +310,14 @@ class _FindDriverPageState extends State<FindDriverPage> {
                             borderRadius: BorderRadius.circular(100),
                           ),
                           child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.phone),
+                            onPressed: () {
+                              Navigator.pushNamed(context, RoutePaths.chat);
+                            },
+                            icon: Icon(Icons.chat),
                             padding: EdgeInsets.all(20),
                           ),
                         ),
-                        SizedBox(
-                          width: 10,
-                        ),
+                        SizedBox(width: 20),
                         Container(
                           //border grey
                           decoration: BoxDecoration(
@@ -329,25 +329,9 @@ class _FindDriverPageState extends State<FindDriverPage> {
                           ),
                           child: IconButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, RoutePaths.chat);
+                              Navigator.pushNamed(context, RoutePaths.payNow);
                             },
-                            icon: Icon(Icons.chat),
-                            padding: EdgeInsets.all(20),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Container(
-                          //border grey
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: Colors.grey.shade300,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.edit),
+                            icon: Icon(Icons.money),
                             padding: EdgeInsets.all(20),
                           ),
                         ),

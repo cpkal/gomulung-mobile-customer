@@ -45,11 +45,8 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              //container gray with full width
-              Container(
-                height: MediaQuery.of(context).size.height * 0.3,
-                child: ComplicatedImageDemo(),
-              ),
+              SizedBox(height: 40),
+
               GridView.count(
                 crossAxisCount: 3,
                 crossAxisSpacing: 20,

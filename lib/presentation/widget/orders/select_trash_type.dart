@@ -11,12 +11,20 @@ class SelectTrashType extends StatefulWidget {
 }
 
 class _SelectTrashTypeState extends State<SelectTrashType> {
+  bool _isTrashTypeLoaded = false;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
+    _fetchTrashTypes();
+  }
+
+  void _fetchTrashTypes() async {
     context.read<OrderBloc>().add(OrderFetchTrashTypes());
+    setState(() {
+      _isTrashTypeLoaded = true;
+    });
   }
 
   @override
@@ -29,15 +37,21 @@ class _SelectTrashTypeState extends State<SelectTrashType> {
       );
     }
 
-    if (context.read<OrderBloc>().state is TrashTypesLoaded) {
+    if (_isTrashTypeLoaded) {
       return _buildTrashType();
+    } else {
+      return OrderCard(
+        child: Column(
+          children: [
+            Text('Tidak dapat mengambil jenis sampah'),
+            ElevatedButton(
+              onPressed: _fetchTrashTypes,
+              child: Text('Coba lagi'),
+            )
+          ],
+        ),
+      );
     }
-
-    return OrderCard(
-      child: Center(
-        child: Text('Gagal memuat jenis sampah'),
-      ),
-    );
   }
 
   Widget _buildTrashType() {
@@ -55,50 +69,60 @@ class _SelectTrashTypeState extends State<SelectTrashType> {
           Wrap(
             spacing: 5.0,
             children: [
-              ChoiceChip(
+              //convert map to list
+              for (var trashType in context
+                  .read<OrderBloc>()
+                  .state
+                  .trash_type
+                  ?.keys
+                  .toList() as List<String>)
+                ChoiceChip(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
                   ),
                   side: BorderSide(color: Colors.grey),
-                  label: Text('Rumahan'),
+                  label: Text(trashType),
                   onSelected: (val) {
+                    Map<String, bool> newMap = {
+                      ...context.read<OrderBloc>().state.trash_type!,
+                    };
+
+                    //set other chips to false
+                    for (var key in newMap.keys) {
+                      if (key != trashType) {
+                        newMap[key] = false;
+                      }
+                    }
+
+                    newMap[trashType] = val;
+
                     context
                         .read<OrderBloc>()
-                        .add(OrderTrashTypeChanged({'Rumahan': val}));
+                        .add(OrderTrashTypeChanged(newMap));
+
+                    // //makes other chips unselected
+                    // for (var key
+                    //     in context.read<OrderBloc>().state.trash_type!.keys) {
+                    //   if (key != trashType) {
+                    //     print('xdding');
+                    //     //create copy of map
+
+                    //     context.read<OrderBloc>().add(OrderTrashTypeChanged({
+                    //           ...context.read<OrderBloc>().state.trash_type!,
+                    //           key: false,
+                    //         }));
+                    //   }
+                    // }
+
+                    // context.read<OrderBloc>().add(OrderTrashTypeChanged({
+                    //       ...context.read<OrderBloc>().state.trash_type!,
+                    //       trashType: val,
+                    //     }));
                   },
                   selected:
-                      context.read<OrderBloc>().state.trash_type?['Rumahan'] ??
-                          false),
-              ChoiceChip(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  side: BorderSide(color: Colors.grey),
-                  label: Text('Komersil'),
-                  onSelected: (val) {
-                    context
-                        .read<OrderBloc>()
-                        .add(OrderTrashTypeChanged({'Komersil': val}));
-                  },
-                  selected:
-                      context.read<OrderBloc>().state.trash_type?['Komersil'] ??
-                          false),
-              ChoiceChip(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  side: BorderSide(color: Colors.grey),
-                  label: Text('Pertanian'),
-                  onSelected: (val) {
-                    context
-                        .read<OrderBloc>()
-                        .add(OrderTrashTypeChanged({'Pertanian': val}));
-                  },
-                  selected: context
-                          .read<OrderBloc>()
-                          .state
-                          .trash_type?['Pertanian'] ??
-                      false),
+                      context.read<OrderBloc>().state.trash_type?[trashType] ??
+                          false,
+                ),
             ],
           )
         ],

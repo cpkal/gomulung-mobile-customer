@@ -10,4 +10,5 @@ class RoutePaths {
   static const String subRoot = '/sub-root';
   static const String chat = '/chat';
   static const String forgotPassword = '/forgot-password';
+  static const String payNow = '/pay-now';
 }

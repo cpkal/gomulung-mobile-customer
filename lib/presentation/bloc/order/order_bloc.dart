@@ -15,7 +15,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   OrderBloc()
       : super(OrderState(payment_method: 'TUNAI', weight_type: 'Kecil')) {
     on<OrderPositionPicked>((event, emit) {
-      print('ini dari order ${event.position}');
       emit(state.copyWith(position: event.position));
     });
 
@@ -48,8 +47,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
   void _onOrderSubmitted(OrderSubmitted event, Emitter<OrderState> emit) async {
     await ApiService.postData('/orders', {
-      'sub_total': 10000.toString(),
-      'grand_total': 10000.toString(),
+      'sub_total': 14.toString(),
+      'grand_total': 14.toString(),
       'pickup_location': {
         "lat": state.position!.latitude,
         "long": state.position!.longitude
@@ -61,9 +60,14 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       'payment_method': 'TUNAI',
       'feature_type': 'pickup',
     }).then((res) {
-      final order = Order.fromJson(jsonDecode(res.body));
+      print('hi');
+      var decoded = jsonDecode(res.body);
+      final order = Order.fromJson(decoded['order']);
       emit(OrderSuccess(order));
-    }).catchError((err) => emit(OrderFailed()));
+    }).catchError((err) {
+      print(err);
+      emit(OrderFailed());
+    });
   }
 
   void _onFetchOrders(FetchOrders event, Emitter<OrderState> emit) async {
@@ -89,7 +93,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   void _onOrderFetchTrashTypes(
       OrderFetchTrashTypes event, Emitter<OrderState> emit) async {
     emit(TrashTypesLoading());
-    print('huh');
 
     final res = await ApiService.fetchData('/trashs/categories');
     final resBody = jsonDecode(res.body);
@@ -98,13 +101,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     Map<String, bool> trashTypesConv = {};
 
     trashTypes.forEach((element) {
-      print(element);
       trashTypesConv[element['category_name']] = false;
     });
 
     emit(state.copyWith(trash_type: trashTypesConv));
-
-    emit(TrashTypesLoaded(
-        trashTypes.map((trashType) => TrashType.fromJson(trashType)).toList()));
   }
 }
