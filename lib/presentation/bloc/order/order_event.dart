@@ -7,59 +7,59 @@ sealed class OrderEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class OrderPositionPicked extends OrderEvent {
+class PickOrderLocation extends OrderEvent {
   final LatLng position;
 
-  OrderPositionPicked({required this.position});
+  PickOrderLocation({required this.position});
 
   @override
   List<Object> get props => [position];
 }
 
-class OrderWeightTypeChanged extends OrderEvent {
+class SelectWeightType extends OrderEvent {
   final String weightType;
 
-  OrderWeightTypeChanged(this.weightType);
+  SelectWeightType(this.weightType);
 
   @override
   List<Object> get props => [weightType];
 }
 
-class OrderImagePathChanged extends OrderEvent {
+class TakeOrderPhoto extends OrderEvent {
   final String imagePath;
 
-  OrderImagePathChanged(this.imagePath);
+  TakeOrderPhoto(this.imagePath);
 
   @override
   List<Object> get props => [imagePath];
 }
 
-class OrderTrashTypeChanged extends OrderEvent {
+class SelectTrashType extends OrderEvent {
   final Map<String, bool> trashType;
 
-  OrderTrashTypeChanged(this.trashType);
+  SelectTrashType(this.trashType);
 
   @override
   List<Object> get props => [trashType];
 }
 
-class OrderPaymentMethodChanged extends OrderEvent {
+class SelectPaymentMethod extends OrderEvent {
   final String paymentMethod;
 
-  OrderPaymentMethodChanged(this.paymentMethod);
+  SelectPaymentMethod(this.paymentMethod);
 
   @override
   List<Object> get props => [paymentMethod];
 }
 
-class OrderSubmitted extends OrderEvent {}
+class SubmitOrder extends OrderEvent {}
 
 class FetchOrders extends OrderEvent {}
 
-class OrderAddressChanged extends OrderEvent {
+class UpdateOrderAddress extends OrderEvent {
   final String address;
 
-  OrderAddressChanged(this.address);
+  UpdateOrderAddress(this.address);
 
   @override
   List<Object> get props => [address];

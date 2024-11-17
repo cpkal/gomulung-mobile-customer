@@ -44,7 +44,7 @@ class PickLocation extends StatelessWidget {
               if (state is AddressFromPosition) {
                 context
                     .read<OrderBloc>()
-                    .add(OrderAddressChanged(state.address));
+                    .add(UpdateOrderAddress(state.address));
               }
             },
             builder: (context, state) {

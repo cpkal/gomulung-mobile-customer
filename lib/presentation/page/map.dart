@@ -346,7 +346,7 @@ class _MapPageState extends State<MapPage> {
                   mapController.camera.center.latitude,
                   mapController.camera.center.longitude)));
 
-              context.read<OrderBloc>().add(OrderPositionPicked(
+              context.read<OrderBloc>().add(PickOrderLocation(
                   position: LatLng(mapController.camera.center.latitude,
                       mapController.camera.center.longitude)));
 

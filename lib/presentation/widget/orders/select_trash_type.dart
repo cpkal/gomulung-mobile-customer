@@ -3,14 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/widget/orders/order_card.dart';
 
-class SelectTrashType extends StatefulWidget {
-  const SelectTrashType({Key? key}) : super(key: key);
+class SelectTrashTypeScreen extends StatefulWidget {
+  const SelectTrashTypeScreen({Key? key}) : super(key: key);
 
   @override
   _SelectTrashTypeState createState() => _SelectTrashTypeState();
 }
 
-class _SelectTrashTypeState extends State<SelectTrashType> {
+class _SelectTrashTypeState extends State<SelectTrashTypeScreen> {
   bool _isTrashTypeLoaded = false;
   @override
   void initState() {
@@ -96,28 +96,10 @@ class _SelectTrashTypeState extends State<SelectTrashType> {
 
                     newMap[trashType] = val;
 
-                    context
-                        .read<OrderBloc>()
-                        .add(OrderTrashTypeChanged(newMap));
+                    print('heiya');
+                    print(newMap);
 
-                    // //makes other chips unselected
-                    // for (var key
-                    //     in context.read<OrderBloc>().state.trash_type!.keys) {
-                    //   if (key != trashType) {
-                    //     print('xdding');
-                    //     //create copy of map
-
-                    //     context.read<OrderBloc>().add(OrderTrashTypeChanged({
-                    //           ...context.read<OrderBloc>().state.trash_type!,
-                    //           key: false,
-                    //         }));
-                    //   }
-                    // }
-
-                    // context.read<OrderBloc>().add(OrderTrashTypeChanged({
-                    //       ...context.read<OrderBloc>().state.trash_type!,
-                    //       trashType: val,
-                    //     }));
+                    context.read<OrderBloc>().add(SelectTrashType(newMap));
                   },
                   selected:
                       context.read<OrderBloc>().state.trash_type?[trashType] ??

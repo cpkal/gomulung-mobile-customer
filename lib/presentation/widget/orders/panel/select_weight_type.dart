@@ -58,7 +58,7 @@ class SelectWeightTypePanel extends StatelessWidget {
                         onTap: () {
                           context
                               .read<OrderBloc>()
-                              .add(OrderWeightTypeChanged('Kecil'));
+                              .add(SelectWeightType('Kecil'));
                         },
                         child: Container(
                           padding: EdgeInsets.all(15),
@@ -99,7 +99,7 @@ class SelectWeightTypePanel extends StatelessWidget {
                         onTap: () {
                           context
                               .read<OrderBloc>()
-                              .add(OrderWeightTypeChanged('Sedang'));
+                              .add(SelectWeightType('Sedang'));
                         },
                         child: Container(
                           padding: EdgeInsets.all(15),
@@ -136,7 +136,7 @@ class SelectWeightTypePanel extends StatelessWidget {
                         onTap: () {
                           context
                               .read<OrderBloc>()
-                              .add(OrderWeightTypeChanged('Besar'));
+                              .add(SelectWeightType('Besar'));
                         },
                         child: Container(
                           padding: EdgeInsets.all(15),

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_customer/data/model/order.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/find_driver.dart';
@@ -26,6 +27,10 @@ class _OrderPageState extends State<OrderPage> {
   late bool _showPaymentMethodPanel = false;
   late bool _showSelectedWeightTypePanel = false;
 
+  bool isLocationSelected = false;
+  bool isWeightSelected = false;
+  bool isTrashTypeSelected = false;
+
   File? _image;
   final ImagePicker _picker = ImagePicker();
 
@@ -35,31 +40,11 @@ class _OrderPageState extends State<OrderPage> {
     setState(() {
       if (pickedFile != null) {
         _image = File(pickedFile.path);
-        context.read<OrderBloc>().add(OrderImagePathChanged(_image!.path));
+        context.read<OrderBloc>().add(TakeOrderPhoto(_image!.path));
       } else {
         print('No image selected.');
       }
     });
-  }
-
-  void _handleSubmit(BuildContext context, OrderState state) {
-    print(state.address);
-    print(state.position);
-    print(state.weight_type);
-    print(state.trash_type);
-    if (state.address == null ||
-        state.position == null ||
-        state.weight_type == null ||
-        state.trash_type == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Isi form yang dibutuhkan'),
-        ),
-      );
-      return;
-    }
-
-    context.read<OrderBloc>().add(OrderSubmitted());
   }
 
   @override
@@ -88,16 +73,26 @@ class _OrderPageState extends State<OrderPage> {
                         .read<WebsocketBloc>()
                         .add(WebsocketSend(jsonString));
 
+                    if (!ModalRoute.of(context)!.isCurrent) {
+                      return; // Prevent further navigation
+                    }
+
                     PersistentNavBarNavigator.pushNewScreen(
                       context,
                       screen: BlocProvider.value(
                         value: context.read<WebsocketBloc>(),
-                        child: FindDriverPage(
-                          order: state.order,
+                        child: BlocProvider.value(
+                          value: context.read<OrderBloc>(),
+                          child: FindDriverPage(
+                            order: state.order,
+                          ),
                         ),
                       ),
                       withNavBar: false,
-                    );
+                    ).then((_) {
+                      //re fetch options
+                      // context.read<OrderBloc>().add(OrderFetchTrashTypes());
+                    });
                   } else if (state is OrderFailed) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
@@ -138,7 +133,7 @@ class _OrderPageState extends State<OrderPage> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                SelectTrashType(),
+                                SelectTrashTypeScreen(),
                                 // SizedBox(height: 20),
                                 // SelectPaymentMethod(onTap: () {}),
                                 SizedBox(
@@ -157,29 +152,35 @@ class _OrderPageState extends State<OrderPage> {
                   );
                 },
               ),
-              Positioned(
-                bottom: 10,
-                //center
-                left: 20,
-                right: 20,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0),
-                  child: ElevatedButton(
-                    onPressed: () =>
-                        _handleSubmit(context, context.read<OrderBloc>().state),
-                    child: SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.8,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text('Rp. 8.000'),
-                            Text('|'),
-                            Text('Pesan')
-                          ],
-                        )),
+
+              //orderbloc builder
+              BlocBuilder<OrderBloc, OrderState>(builder: (context, state) {
+                return Positioned(
+                  bottom: 10,
+                  //center
+                  left: 20,
+                  right: 20,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        context.read<OrderBloc>().add(SubmitOrder());
+                      },
+                      child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.8,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              //if location selected, weight selected, and trash type selected show price
+
+                              Text('|'),
+                              Text('Pesan')
+                            ],
+                          )),
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
 
               //panel to select payment method
               if (_showPaymentMethodPanel) _buildPaymentMethodPanel(),

@@ -13,39 +13,45 @@ part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
   OrderBloc()
-      : super(OrderState(payment_method: 'TUNAI', weight_type: 'Kecil')) {
-    on<OrderPositionPicked>((event, emit) {
+      : super(OrderState(
+          address: '',
+          weight_type: 'Kecil',
+          image_path: '',
+          trash_type: {},
+          payment_method: '',
+        )) {
+    on<PickOrderLocation>((event, emit) {
       emit(state.copyWith(position: event.position));
     });
 
-    on<OrderWeightTypeChanged>((event, emit) {
+    on<SelectWeightType>((event, emit) {
       emit(state.copyWith(weight_type: event.weightType));
     });
 
-    on<OrderImagePathChanged>((event, emit) {
+    on<TakeOrderPhoto>((event, emit) {
       emit(state.copyWith(image_path: event.imagePath));
     });
 
-    on<OrderTrashTypeChanged>((event, emit) {
+    on<SelectTrashType>((event, emit) {
       emit(state.copyWith(trash_type: event.trashType));
     });
 
     on<OrderFetchTrashTypes>(_onOrderFetchTrashTypes);
 
-    on<OrderPaymentMethodChanged>((event, emit) {
+    on<SelectPaymentMethod>((event, emit) {
       emit(state.copyWith(payment_method: event.paymentMethod));
     });
 
-    on<OrderAddressChanged>((event, emit) {
+    on<UpdateOrderAddress>((event, emit) {
       emit(state.copyWith(address: event.address));
     });
 
-    on<OrderSubmitted>(_onOrderSubmitted);
+    on<SubmitOrder>(_onOrderSubmitted);
     on<FetchOrders>(_onFetchOrders);
     on<OrderCanceled>(_onOrderCanceled);
   }
 
-  void _onOrderSubmitted(OrderSubmitted event, Emitter<OrderState> emit) async {
+  void _onOrderSubmitted(SubmitOrder event, Emitter<OrderState> emit) async {
     await ApiService.postData('/orders', {
       'sub_total': 14.toString(),
       'grand_total': 14.toString(),
