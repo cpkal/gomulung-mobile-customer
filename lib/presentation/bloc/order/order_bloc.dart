@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:las_customer/data/datasource/remote/api_service.dart';
 import 'package:las_customer/data/model/order.dart';
+import 'package:las_customer/data/model/trashType.dart';
 import 'package:latlong2/latlong.dart';
 
 part 'order_event.dart';
@@ -17,6 +18,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       print('ini dari order ${event.position}');
       emit(state.copyWith(position: event.position));
     });
+
     on<OrderWeightTypeChanged>((event, emit) {
       emit(state.copyWith(weight_type: event.weightType));
     });
@@ -28,6 +30,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<OrderTrashTypeChanged>((event, emit) {
       emit(state.copyWith(trash_type: event.trashType));
     });
+
+    on<OrderFetchTrashTypes>(_onOrderFetchTrashTypes);
 
     on<OrderPaymentMethodChanged>((event, emit) {
       emit(state.copyWith(payment_method: event.paymentMethod));
@@ -80,5 +84,27 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     await ApiService.deleteData('/orders/${event.id}').then((res) {
       emit(OrderCanceledSuccess());
     }).catchError((err) => emit(OrderFailed()));
+  }
+
+  void _onOrderFetchTrashTypes(
+      OrderFetchTrashTypes event, Emitter<OrderState> emit) async {
+    emit(TrashTypesLoading());
+    print('huh');
+
+    final res = await ApiService.fetchData('/trashs/categories');
+    final resBody = jsonDecode(res.body);
+    final trashTypes = resBody['data'] as List;
+
+    Map<String, bool> trashTypesConv = {};
+
+    trashTypes.forEach((element) {
+      print(element);
+      trashTypesConv[element['category_name']] = false;
+    });
+
+    emit(state.copyWith(trash_type: trashTypesConv));
+
+    emit(TrashTypesLoaded(
+        trashTypes.map((trashType) => TrashType.fromJson(trashType)).toList()));
   }
 }

@@ -5,11 +5,7 @@ final class OrderState extends Equatable {
   String? address;
   String? weight_type;
   String? image_path;
-  Map<String, bool>? trash_type = {
-    'Rumahan': false,
-    'Komersil': false,
-    'Pertanian': false,
-  };
+  Map<String, bool>? trash_type;
   String? payment_method;
 
   OrderState(
@@ -74,3 +70,16 @@ final class OrderLoading extends OrderState {}
 final class OrdersEmpty extends OrderState {}
 
 final class OrderCanceledSuccess extends OrderState {}
+
+final class TrashTypesLoading extends OrderState {}
+
+final class TrashTypesLoaded extends OrderState {
+  final List<TrashType> trashTypes;
+
+  TrashTypesLoaded(this.trashTypes);
+
+  @override
+  List get props => [trashTypes];
+}
+
+final class TrashTypesError extends OrderState {}

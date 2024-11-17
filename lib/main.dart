@@ -52,6 +52,8 @@ class _MyAppState extends State<MyApp> {
         setState(() {
           isAuthenticated = true;
         });
+      } else if (response.statusCode == 400) {
+        await _secureStorage.deleteSecureData(key: 'token');
       }
     }
 

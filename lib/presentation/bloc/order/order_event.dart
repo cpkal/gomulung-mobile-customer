@@ -73,3 +73,5 @@ class OrderCanceled extends OrderEvent {
   @override
   List<Object> get props => [id];
 }
+
+class OrderFetchTrashTypes extends OrderEvent {}

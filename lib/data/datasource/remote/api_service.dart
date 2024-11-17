@@ -44,6 +44,9 @@ class ApiService {
 
     if (response.statusCode == 200) {
       return response;
+    } else if (response.statusCode == 400 &&
+        response.body.contains('TokenExpiredError')) {
+      return response;
     } else {
       throw Exception('Failed to post data');
     }
