@@ -52,20 +52,21 @@ class SelectWeightTypePanel extends StatelessWidget {
               //select payment method
               Expanded(
                 child: SingleChildScrollView(
-                  child: Column(
-                    children: [
+                  child: Column(children: [
+                    for (var weightType in state.weight_types_list!)
                       GestureDetector(
                         onTap: () {
                           context
                               .read<OrderBloc>()
-                              .add(SelectWeightType('Kecil'));
+                              .add(SelectWeightType(weightType.name!));
                         },
                         child: Container(
+                          margin: EdgeInsets.symmetric(vertical: 5),
                           padding: EdgeInsets.all(15),
                           width: MediaQuery.of(context).size.width,
                           decoration: BoxDecoration(
                             border: Border.all(
-                              color: state.weight_type == 'Kecil'
+                              color: state.weight_type == weightType.name
                                   ? Theme.of(context).colorScheme.primary
                                   : Colors.grey,
                             ),
@@ -75,14 +76,14 @@ class SelectWeightTypePanel extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Kecil',
+                                weightType.name!,
                                 style: Theme.of(context)
                                     .textTheme
                                     .headlineMedium!
                                     .copyWith(fontWeight: FontWeight.bold),
                               ),
                               Text(
-                                'maks 5kg.',
+                                weightType.description!,
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium!
@@ -92,82 +93,7 @@ class SelectWeightTypePanel extends StatelessWidget {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          context
-                              .read<OrderBloc>()
-                              .add(SelectWeightType('Sedang'));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(15),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: state.weight_type == 'Sedang'
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Sedang',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium!
-                                      .copyWith(fontWeight: FontWeight.bold)),
-                              Text('maks 10kg.',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(color: Colors.grey))
-                            ],
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          context
-                              .read<OrderBloc>()
-                              .add(SelectWeightType('Besar'));
-                        },
-                        child: Container(
-                          padding: EdgeInsets.all(15),
-                          width: MediaQuery.of(context).size.width,
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: state.weight_type == 'Besar'
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Colors.grey,
-                            ),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Besar',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium!
-                                      .copyWith(fontWeight: FontWeight.bold)),
-                              Text('maks 20kg.',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium!
-                                      .copyWith(color: Colors.grey))
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                  ]),
                 ),
               )
             ],

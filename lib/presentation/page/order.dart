@@ -51,7 +51,6 @@ class _OrderPageState extends State<OrderPage> {
   void didUpdateWidget(covariant OrderPage oldWidget) {
     // TODO: implement didUpdateWidget
     super.didUpdateWidget(oldWidget);
-    print('running pt2');
   }
 
   @override
@@ -91,7 +90,7 @@ class _OrderPageState extends State<OrderPage> {
                       withNavBar: false,
                     ).then((_) {
                       //re fetch options
-                      // context.read<OrderBloc>().add(OrderFetchTrashTypes());
+                      context.read<OrderBloc>().add(OrderFetchTrashTypes());
                     });
                   } else if (state is OrderFailed) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -102,6 +101,7 @@ class _OrderPageState extends State<OrderPage> {
                   }
                 },
                 builder: (context, state) {
+                  // print(state.is_button_enabled);
                   return Container(
                     height: MediaQuery.of(context).size.height,
                     child: SingleChildScrollView(
@@ -139,7 +139,7 @@ class _OrderPageState extends State<OrderPage> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                ShowRingkasanAngkutan(),
+                                // ShowRingkasanAngkutan(),
                               ],
                             ),
                           ),
@@ -155,6 +155,8 @@ class _OrderPageState extends State<OrderPage> {
 
               //orderbloc builder
               BlocBuilder<OrderBloc, OrderState>(builder: (context, state) {
+                print('xdding');
+                print(state.is_button_enabled);
                 return Positioned(
                   bottom: 10,
                   //center
@@ -163,15 +165,19 @@ class _OrderPageState extends State<OrderPage> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: ElevatedButton(
-                      onPressed: () {
-                        context.read<OrderBloc>().add(SubmitOrder());
-                      },
+                      onPressed: state.is_button_enabled
+                          ? () {
+                              context.read<OrderBloc>().add(SubmitOrder());
+                            }
+                          : null,
                       child: SizedBox(
                           width: MediaQuery.of(context).size.width * 0.8,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               //if location selected, weight selected, and trash type selected show price
+                              if (state.is_button_enabled)
+                                Text('Rp. ${state.price_total}'),
 
                               Text('|'),
                               Text('Pesan')

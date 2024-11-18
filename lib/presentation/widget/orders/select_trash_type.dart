@@ -69,42 +69,22 @@ class _SelectTrashTypeState extends State<SelectTrashTypeScreen> {
           Wrap(
             spacing: 5.0,
             children: [
-              //convert map to list
-              for (var trashType in context
-                  .read<OrderBloc>()
-                  .state
-                  .trash_type
-                  ?.keys
-                  .toList() as List<String>)
+              for (var trashType
+                  in context.read<OrderBloc>().state.trash_types_list!)
                 ChoiceChip(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
                   ),
                   side: BorderSide(color: Colors.grey),
-                  label: Text(trashType),
+                  label: Text(trashType.categoryName!),
                   onSelected: (val) {
-                    Map<String, bool> newMap = {
-                      ...context.read<OrderBloc>().state.trash_type!,
-                    };
-
-                    //set other chips to false
-                    for (var key in newMap.keys) {
-                      if (key != trashType) {
-                        newMap[key] = false;
-                      }
-                    }
-
-                    newMap[trashType] = val;
-
-                    print('heiya');
-                    print(newMap);
-
-                    context.read<OrderBloc>().add(SelectTrashType(newMap));
+                    context
+                        .read<OrderBloc>()
+                        .add(SelectTrashType(trashType.categoryName!));
                   },
-                  selected:
-                      context.read<OrderBloc>().state.trash_type?[trashType] ??
-                          false,
-                ),
+                  selected: context.read<OrderBloc>().state.trash_type ==
+                      trashType.categoryName,
+                )
             ],
           )
         ],

@@ -1,16 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/widget/orders/order_card.dart';
 
-class SelectTotalWeight extends StatelessWidget {
+class SelectTotalWeight extends StatefulWidget {
   final Function() onTap;
   final state;
 
   const SelectTotalWeight({required this.onTap, required this.state});
 
   @override
+  _SelectTotalWeightState createState() => _SelectTotalWeightState();
+}
+
+class _SelectTotalWeightState extends State<SelectTotalWeight> {
+  _SelectTotalWeightState();
+
+  bool _isWeightTypeLoaded = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+    _fetchWeightTypes();
+  }
+
+  void _fetchWeightTypes() async {
+    context.read<OrderBloc>().add(OrderFetchWeightTypes());
+    setState(() {
+      _isWeightTypeLoaded = true;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // print(widget.state.weight_type.keys.first);
     return OrderCard(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -34,9 +61,9 @@ class SelectTotalWeight extends StatelessWidget {
           Row(
             children: [
               Text(
-                  state.weight_type == 'Kecil'
+                  widget.state.weight_type == 'Kecil'
                       ? 'Kecil 5kg'
-                      : state.weight_type == 'Sedang'
+                      : widget.state.weight_type == 'Sedang'
                           ? 'Sedang 10kg'
                           : 'Besar 20kg',
                   style: Theme.of(context).textTheme.bodyLarge),

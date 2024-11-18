@@ -35,7 +35,7 @@ class TakeOrderPhoto extends OrderEvent {
 }
 
 class SelectTrashType extends OrderEvent {
-  final Map<String, bool> trashType;
+  final String trashType;
 
   SelectTrashType(this.trashType);
 
@@ -75,3 +75,7 @@ class OrderCanceled extends OrderEvent {
 }
 
 class OrderFetchTrashTypes extends OrderEvent {}
+
+class OrderFetchWeightTypes extends OrderEvent {}
+
+class OrderCalculatePrice extends OrderEvent {}

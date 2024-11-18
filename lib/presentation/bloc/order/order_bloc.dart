@@ -6,26 +6,44 @@ import 'package:equatable/equatable.dart';
 import 'package:las_customer/data/datasource/remote/api_service.dart';
 import 'package:las_customer/data/model/order.dart';
 import 'package:las_customer/data/model/trashType.dart';
+import 'package:las_customer/data/model/weightType.dart';
 import 'package:latlong2/latlong.dart';
 
 part 'order_event.dart';
 part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
-  OrderBloc()
-      : super(OrderState(
-          address: '',
-          weight_type: 'Kecil',
-          image_path: '',
-          trash_type: {},
-          payment_method: '',
-        )) {
+  OrderBloc() : super(OrderState()) {
     on<PickOrderLocation>((event, emit) {
-      emit(state.copyWith(position: event.position));
+      final isButtonEnabled = _shouldEnableButton(
+        trashType: state.trash_type.toString(),
+        weightType: state.weight_type,
+        location: state.position.toString(),
+      );
+
+      emit(state.copyWith(
+          position: event.position, is_button_enabled: isButtonEnabled));
+
+      if (isButtonEnabled) {
+        print('lah kok 1');
+        add(OrderCalculatePrice());
+      }
     });
 
     on<SelectWeightType>((event, emit) {
-      emit(state.copyWith(weight_type: event.weightType));
+      final isButtonEnabled = _shouldEnableButton(
+        trashType: state.trash_type.toString(),
+        weightType: state.weight_type,
+        location: state.position.toString(),
+      );
+
+      emit(state.copyWith(
+          weight_type: event.weightType, is_button_enabled: isButtonEnabled));
+
+      if (isButtonEnabled) {
+        print('lah kok 2');
+        add(OrderCalculatePrice());
+      }
     });
 
     on<TakeOrderPhoto>((event, emit) {
@@ -33,7 +51,19 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     });
 
     on<SelectTrashType>((event, emit) {
-      emit(state.copyWith(trash_type: event.trashType));
+      final isButtonEnabled = _shouldEnableButton(
+        trashType: state.trash_type.toString(),
+        weightType: state.weight_type,
+        location: state.position.toString(),
+      );
+
+      emit(state.copyWith(
+          trash_type: event.trashType, is_button_enabled: isButtonEnabled));
+
+      if (isButtonEnabled) {
+        print('lah kok 3');
+        add(OrderCalculatePrice());
+      }
     });
 
     on<OrderFetchTrashTypes>(_onOrderFetchTrashTypes);
@@ -49,6 +79,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<SubmitOrder>(_onOrderSubmitted);
     on<FetchOrders>(_onFetchOrders);
     on<OrderCanceled>(_onOrderCanceled);
+    on<OrderFetchWeightTypes>(_onFetchWeightTypse);
+    on<OrderCalculatePrice>(_onOrderCalculatePrice);
   }
 
   void _onOrderSubmitted(SubmitOrder event, Emitter<OrderState> emit) async {
@@ -102,14 +134,53 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     final res = await ApiService.fetchData('/trashs/categories');
     final resBody = jsonDecode(res.body);
+    print(resBody);
     final trashTypes = resBody['data'] as List;
 
-    Map<String, bool> trashTypesConv = {};
+    emit(state.copyWith(
+        trash_type: trashTypes[0]['category_name'],
+        trash_types_list:
+            trashTypes.map((e) => TrashType.fromJson(e)).toList()));
+  }
 
-    trashTypes.forEach((element) {
-      trashTypesConv[element['category_name']] = false;
+  void _onFetchWeightTypse(
+    OrderFetchWeightTypes event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(WeightTypesLoading());
+
+    final res = await ApiService.fetchData('/trashs/weights');
+    final resBody = jsonDecode(res.body);
+    final weightTypes = resBody['data'] as List;
+
+    emit(state.copyWith(
+      weight_type: weightTypes[0]['name'],
+      weight_types_list:
+          weightTypes.map((e) => WeightType.fromJson(e)).toList(),
+    ));
+  }
+
+  void _onOrderCalculatePrice(
+    OrderCalculatePrice event,
+    Emitter<OrderState> emit,
+  ) async {
+    emit(OrderLoading());
+
+    await ApiService.postData('/orders/calculate/price', {
+      'trash_weight_selection': state.weight_type,
+      'trash_type': state.trash_type,
+    }).then((res) {
+      final resBody = jsonDecode(res.body);
+      print(resBody['total_price']);
+      emit(state.copyWith(
+          price_total: resBody['total_price'], is_button_enabled: true));
+    }).catchError((err) {
+      print(err);
     });
+  }
 
-    emit(state.copyWith(trash_type: trashTypesConv));
+  bool _shouldEnableButton(
+      {String? trashType, String? weightType, String? location}) {
+    return trashType != null && weightType != null && location != null;
   }
 }
