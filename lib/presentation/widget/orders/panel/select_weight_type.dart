@@ -53,7 +53,7 @@ class SelectWeightTypePanel extends StatelessWidget {
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(children: [
-                    for (var weightType in state.weight_types_list!)
+                    for (var weightType in state.weight_types_list ?? [])
                       GestureDetector(
                         onTap: () {
                           context

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/data/model/order.dart';
+import 'package:las_customer/data/model/payment.dart';
 import 'package:las_customer/presentation/bloc/crew/crew_bloc.dart';
 import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
@@ -13,7 +14,10 @@ import 'package:latlong2/latlong.dart';
 
 class FindDriverPage extends StatefulWidget {
   final Order order;
-  FindDriverPage({Key? key, required this.order}) : super(key: key);
+  final Payment payment;
+
+  FindDriverPage({Key? key, required this.order, required this.payment})
+      : super(key: key);
 
   @override
   _FindDriverPageState createState() => _FindDriverPageState();
@@ -55,6 +59,8 @@ class _FindDriverPageState extends State<FindDriverPage> {
             setState(() {
               isCrewFound = true;
             });
+
+            print(widget.payment.invoiceUrl);
 
             setState(() {
               crewLocation = LatLng(
@@ -118,7 +124,7 @@ class _FindDriverPageState extends State<FindDriverPage> {
                   borderRadius: BorderRadius.circular(200),
                 ),
                 child: isCrewFound
-                    ? Text('Kru LAS ditemukan')
+                    ? Text('Kru Go Mulung ditemukan')
                     : Text('Sedang mencari kru Go Mulung'),
               ), //  Custom title
               titleTextStyle: Theme.of(context).textTheme.headlineSmall),
@@ -329,7 +335,14 @@ class _FindDriverPageState extends State<FindDriverPage> {
                           ),
                           child: IconButton(
                             onPressed: () {
-                              Navigator.pushNamed(context, RoutePaths.payNow);
+                              Navigator.pushNamed(
+                                context,
+                                RoutePaths.payNow,
+                                arguments: {
+                                  'order': widget.order,
+                                  'payment': widget.payment,
+                                },
+                              );
                             },
                             icon: Icon(Icons.money),
                             padding: EdgeInsets.all(20),

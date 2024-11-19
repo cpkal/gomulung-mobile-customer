@@ -30,19 +30,19 @@ class OrderProcessPage extends StatelessWidget {
                   for (var order in state.orders)
                     GestureDetector(
                       onTap: () {
-                        print(order.status);
-                        if (order.status == 'pending') {
+                        if (order.order?.status == 'pending') {
                           PersistentNavBarNavigator.pushNewScreen(
                             context,
                             screen: FindDriverPage(
-                              order: order,
+                              order: order.order!,
+                              payment: order.payment!,
                             ),
                           );
-                        } else if (order.status == 'in_progress') {
+                        } else if (order.order?.status == 'in_progress') {
                           PersistentNavBarNavigator.pushNewScreen(
                             context,
                             screen: DetailOrderProcess(
-                              order: order,
+                              order: order.order!,
                             ),
                           );
                         }
@@ -66,7 +66,7 @@ class OrderProcessPage extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
-                                  order.grandTotal.toString(),
+                                  order.order?.grandTotal.toString() ?? '',
                                   style: Theme.of(context)
                                       .textTheme
                                       .headlineMedium!

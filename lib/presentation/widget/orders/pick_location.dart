@@ -14,10 +14,20 @@ class PickLocation extends StatelessWidget {
   Widget build(BuildContext context) {
     return OrderCard(
       onTap: () {
-        PersistentNavBarNavigator.pushNewScreen(
+        // PersistentNavBarNavigator.pushNewScreen(
+        //   context,
+        //   screen: BlocProvider.value(
+        //     value: context.read<OrderBloc>(),
+        //     child: MapPage(),
+        //   ),
+        //   withNavBar: false,
+        // );
+
+        Navigator.push(
           context,
-          screen: MapPage(),
-          withNavBar: false,
+          MaterialPageRoute(
+            builder: (context) => MapPage(),
+          ),
         );
       },
       child: Row(

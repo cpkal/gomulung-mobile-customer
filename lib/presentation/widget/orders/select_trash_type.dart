@@ -11,7 +11,6 @@ class SelectTrashTypeScreen extends StatefulWidget {
 }
 
 class _SelectTrashTypeState extends State<SelectTrashTypeScreen> {
-  bool _isTrashTypeLoaded = false;
   @override
   void initState() {
     // TODO: implement initState
@@ -22,9 +21,6 @@ class _SelectTrashTypeState extends State<SelectTrashTypeScreen> {
 
   void _fetchTrashTypes() async {
     context.read<OrderBloc>().add(OrderFetchTrashTypes());
-    setState(() {
-      _isTrashTypeLoaded = true;
-    });
   }
 
   @override
@@ -37,21 +33,7 @@ class _SelectTrashTypeState extends State<SelectTrashTypeScreen> {
       );
     }
 
-    if (_isTrashTypeLoaded) {
-      return _buildTrashType();
-    } else {
-      return OrderCard(
-        child: Column(
-          children: [
-            Text('Tidak dapat mengambil jenis sampah'),
-            ElevatedButton(
-              onPressed: _fetchTrashTypes,
-              child: Text('Coba lagi'),
-            )
-          ],
-        ),
-      );
-    }
+    return _buildTrashType();
   }
 
   Widget _buildTrashType() {
@@ -70,7 +52,7 @@ class _SelectTrashTypeState extends State<SelectTrashTypeScreen> {
             spacing: 5.0,
             children: [
               for (var trashType
-                  in context.read<OrderBloc>().state.trash_types_list!)
+                  in context.read<OrderBloc>().state.trash_types_list ?? [])
                 ChoiceChip(
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),

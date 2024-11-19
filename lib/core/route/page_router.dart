@@ -16,6 +16,8 @@ final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 
 class PageRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
+    final args = settings.arguments as Map<String, dynamic>?;
+
     switch (settings.name) {
       case RoutePaths.askLoginOrRegister:
         return MaterialPageRoute(builder: (_) => AskLoginRegisterPage());
@@ -37,7 +39,10 @@ class PageRouter {
       case RoutePaths.forgotPassword:
         return MaterialPageRoute(builder: (_) => ForgotPasswordPage());
       case RoutePaths.payNow:
-        return MaterialPageRoute(builder: (_) => PayNowPage());
+        return MaterialPageRoute(
+            builder: (_) => PayNowPage(
+                  invoice_url: args?['payment'].invoiceUrl,
+                ));
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

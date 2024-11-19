@@ -23,7 +23,8 @@ class OrderPage extends StatefulWidget {
   _OrderPageState createState() => _OrderPageState();
 }
 
-class _OrderPageState extends State<OrderPage> {
+class _OrderPageState extends State<OrderPage>
+    with AutomaticKeepAliveClientMixin {
   late bool _showPaymentMethodPanel = false;
   late bool _showSelectedWeightTypePanel = false;
 
@@ -33,6 +34,9 @@ class _OrderPageState extends State<OrderPage> {
 
   File? _image;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  bool get wantKeepAlive => true;
 
   Future<void> _getImageFromCamera() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.camera);
@@ -55,6 +59,7 @@ class _OrderPageState extends State<OrderPage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Buang Sampah'),
@@ -84,6 +89,7 @@ class _OrderPageState extends State<OrderPage> {
                           value: context.read<OrderBloc>(),
                           child: FindDriverPage(
                             order: state.order,
+                            payment: state.payment,
                           ),
                         ),
                       ),
@@ -155,8 +161,6 @@ class _OrderPageState extends State<OrderPage> {
 
               //orderbloc builder
               BlocBuilder<OrderBloc, OrderState>(builder: (context, state) {
-                print('xdding');
-                print(state.is_button_enabled);
                 return Positioned(
                   bottom: 10,
                   //center

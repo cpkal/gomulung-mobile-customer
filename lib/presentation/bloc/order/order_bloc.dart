@@ -5,6 +5,8 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:las_customer/data/datasource/remote/api_service.dart';
 import 'package:las_customer/data/model/order.dart';
+import 'package:las_customer/data/model/orderPayment.dart';
+import 'package:las_customer/data/model/payment.dart';
 import 'package:las_customer/data/model/trashType.dart';
 import 'package:las_customer/data/model/weightType.dart';
 import 'package:latlong2/latlong.dart';
@@ -16,7 +18,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   OrderBloc() : super(OrderState()) {
     on<PickOrderLocation>((event, emit) {
       final isButtonEnabled = _shouldEnableButton(
-        trashType: state.trash_type.toString(),
+        trashType: state.trash_type,
         weightType: state.weight_type,
         location: state.position.toString(),
       );
@@ -25,14 +27,13 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           position: event.position, is_button_enabled: isButtonEnabled));
 
       if (isButtonEnabled) {
-        print('lah kok 1');
         add(OrderCalculatePrice());
       }
     });
 
     on<SelectWeightType>((event, emit) {
       final isButtonEnabled = _shouldEnableButton(
-        trashType: state.trash_type.toString(),
+        trashType: state.trash_type,
         weightType: state.weight_type,
         location: state.position.toString(),
       );
@@ -41,7 +42,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           weight_type: event.weightType, is_button_enabled: isButtonEnabled));
 
       if (isButtonEnabled) {
-        print('lah kok 2');
         add(OrderCalculatePrice());
       }
     });
@@ -52,7 +52,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     on<SelectTrashType>((event, emit) {
       final isButtonEnabled = _shouldEnableButton(
-        trashType: state.trash_type.toString(),
+        trashType: state.trash_type,
         weightType: state.weight_type,
         location: state.position.toString(),
       );
@@ -61,7 +61,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
           trash_type: event.trashType, is_button_enabled: isButtonEnabled));
 
       if (isButtonEnabled) {
-        print('lah kok 3');
         add(OrderCalculatePrice());
       }
     });
@@ -85,23 +84,23 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
   void _onOrderSubmitted(SubmitOrder event, Emitter<OrderState> emit) async {
     await ApiService.postData('/orders', {
-      'sub_total': 14.toString(),
-      'grand_total': 14.toString(),
+      'sub_total': state.price_total.toString(),
+      'grand_total': state.price_total.toString(),
       'pickup_location': {
         "lat": state.position!.latitude,
         "long": state.position!.longitude
       },
       'address': state.address,
-      'trash_type': 'Rumahan',
+      'trash_type': state.trash_type,
       'trash_weight_selection': state.weight_type,
-      'trash_photo_path': 'NO IMAGE',
-      'payment_method': 'TUNAI',
+      'trash_photo_path': state.image_path ?? 'NO IMAGE',
+      'payment_method': 'XENDIT_ALL_PAYMENT',
       'feature_type': 'pickup',
     }).then((res) {
-      print('hi');
       var decoded = jsonDecode(res.body);
       final order = Order.fromJson(decoded['order']);
-      emit(OrderSuccess(order));
+      final payment = Payment.fromJson(decoded['payment']);
+      emit(OrderSuccess(order, payment));
     }).catchError((err) {
       print(err);
       emit(OrderFailed());
@@ -109,7 +108,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   }
 
   void _onFetchOrders(FetchOrders event, Emitter<OrderState> emit) async {
-    emit(OrderLoading());
     await ApiService.fetchData('/orders').then((res) {
       final orders = jsonDecode(res.body) as List;
 
@@ -118,8 +116,10 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         return;
       }
 
-      emit(OrdersLoaded(orders.map((order) => Order.fromJson(order)).toList()));
-    }).catchError((err) => emit(OrderFailed()));
+      emit(OrdersLoaded(orders.map((e) => OrderPayment.fromJson(e)).toList()));
+    }).catchError((err) {
+      emit(OrderFailed());
+    });
   }
 
   void _onOrderCanceled(OrderCanceled event, Emitter<OrderState> emit) async {
@@ -134,8 +134,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     final res = await ApiService.fetchData('/trashs/categories');
     final resBody = jsonDecode(res.body);
-    print(resBody);
     final trashTypes = resBody['data'] as List;
+
+    await Future.delayed(Duration.zero);
 
     emit(state.copyWith(
         trash_type: trashTypes[0]['category_name'],
@@ -164,23 +165,21 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     OrderCalculatePrice event,
     Emitter<OrderState> emit,
   ) async {
-    emit(OrderLoading());
-
     await ApiService.postData('/orders/calculate/price', {
       'trash_weight_selection': state.weight_type,
       'trash_type': state.trash_type,
     }).then((res) {
       final resBody = jsonDecode(res.body);
-      print(resBody['total_price']);
-      emit(state.copyWith(
-          price_total: resBody['total_price'], is_button_enabled: true));
+
+      emit(state.copyWith(price_total: resBody['total_price']));
     }).catchError((err) {
       print(err);
+      // emit(state.copyWith(price_total: 0, is_button_enabled: false));
     });
   }
 
   bool _shouldEnableButton(
       {String? trashType, String? weightType, String? location}) {
-    return trashType != null && weightType != null && location != null;
+    return trashType != '' && weightType != '' && location != null;
   }
 }

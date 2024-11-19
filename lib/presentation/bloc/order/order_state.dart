@@ -11,6 +11,7 @@ final class OrderState extends Equatable {
   String? payment_method;
   bool is_button_enabled;
   int? price_total;
+  bool is_loading = false;
 
   OrderState({
     this.position,
@@ -23,6 +24,7 @@ final class OrderState extends Equatable {
     this.payment_method,
     this.is_button_enabled = false,
     this.price_total,
+    this.is_loading = false,
   });
 
   OrderState copyWith({
@@ -36,6 +38,7 @@ final class OrderState extends Equatable {
     String? payment_method,
     bool? is_button_enabled,
     int? price_total,
+    bool? is_loading,
   }) {
     return OrderState(
       position: position ?? this.position,
@@ -48,6 +51,7 @@ final class OrderState extends Equatable {
       payment_method: payment_method ?? this.payment_method,
       is_button_enabled: is_button_enabled ?? this.is_button_enabled,
       price_total: price_total ?? this.price_total,
+      is_loading: is_loading ?? this.is_loading,
     );
   }
 
@@ -62,23 +66,25 @@ final class OrderState extends Equatable {
         trash_type,
         payment_method,
         is_button_enabled,
-        price_total
+        price_total,
+        is_loading,
       ];
 }
 
 final class OrderSuccess extends OrderState {
   final Order order;
+  final Payment payment;
 
-  OrderSuccess(this.order);
+  OrderSuccess(this.order, this.payment);
 
   @override
-  List get props => [order];
+  List get props => [order, payment];
 }
 
 final class OrderFailed extends OrderState {}
 
 final class OrdersLoaded extends OrderState {
-  final List<Order> orders;
+  final List<OrderPayment> orders;
 
   OrdersLoaded(this.orders);
 
