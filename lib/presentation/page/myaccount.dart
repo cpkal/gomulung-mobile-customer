@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/core/util/secure_storage.dart';
+import 'package:las_customer/presentation/page/change_password.dart';
 import 'package:las_customer/presentation/page/login.dart';
+import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class MyAccountPage extends StatelessWidget {
   MyAccountPage({Key? key}) : super(key: key);
@@ -39,7 +41,6 @@ class MyAccountPage extends StatelessWidget {
                     children: [
                       Text('John Doe'),
                       Text('john.doe@example.com'),
-                      Text('Layanan: Rumahan'),
                     ],
                   )
                 ],
@@ -52,31 +53,42 @@ class MyAccountPage extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: [
+                  // SizedBox(
+                  //   height: 20,
+                  // ),
                   // InkWell(
                   //   onTap: () {},
-                  //   child: Row(
-                  //     children: [
-                  //       Icon(Icons.edit_outlined),
-                  //       SizedBox(
-                  //         width: 10,
+                  //   child: Container(
+                  //       padding: EdgeInsets.all(5),
+                  //       decoration: BoxDecoration(
+                  //         border: Border.all(color: Colors.grey),
+                  //         borderRadius: BorderRadius.circular(100),
                   //       ),
-                  //       Text('Edit Profil'),
-                  //     ],
-                  //   ),
+                  //       child: Center(
+                  //         child: Text('Akun saya'),
+                  //       )),
                   // ),
                   SizedBox(
                     height: 20,
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      PersistentNavBarNavigator.pushNewScreen(context,
+                          screen: ChangePasswordPage());
+                    },
                     child: Container(
                         padding: EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
+                          color: Theme.of(context).primaryColor,
+                          // border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Center(
-                          child: Text('Akun saya'),
+                          child: Text(
+                            'Ganti password',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
+                          ),
                         )),
                   ),
                   SizedBox(
@@ -87,26 +99,16 @@ class MyAccountPage extends StatelessWidget {
                     child: Container(
                         padding: EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
+                          color: Theme.of(context).primaryColor,
+                          // border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Center(
-                          child: Text('Ganti password'),
-                        )),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  InkWell(
-                    onTap: () {},
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Center(
-                          child: Text('Histori pesanan'),
+                          child: Text(
+                            'Histori Pesanan',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary),
+                          ),
                         )),
                   ),
                 ],
@@ -127,11 +129,14 @@ class MyAccountPage extends StatelessWidget {
                   margin: EdgeInsets.symmetric(horizontal: 20),
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
+                    border: Border.all(color: Colors.red),
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Center(
-                    child: Text('Keluar'),
+                    child: Text(
+                      'Keluar',
+                      style: TextStyle(color: Colors.red),
+                    ),
                   )),
             ),
           ],

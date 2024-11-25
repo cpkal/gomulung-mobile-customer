@@ -8,6 +8,7 @@ import 'package:las_customer/data/datasource/remote/api_service.dart';
 import 'package:las_customer/data/datasource/remote/web_socket_service.dart';
 import 'package:las_customer/data/repository/authentication_repository.dart';
 import 'package:las_customer/data/repository/user.dart';
+import 'package:las_customer/presentation/bloc/change_password/change_password_bloc.dart';
 import 'package:las_customer/presentation/bloc/crew/crew_bloc.dart';
 import 'package:las_customer/presentation/bloc/login/login_bloc.dart';
 import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
@@ -93,7 +94,8 @@ class _MyAppState extends State<MyApp> {
           ),
           BlocProvider(create: (context) => MapBloc()),
           BlocProvider(create: (context) => OrderBloc()),
-          BlocProvider(create: (context) => CrewBloc())
+          BlocProvider(create: (context) => CrewBloc()),
+          BlocProvider(create: (context) => ChangePasswordBloc())
         ],
         child: MaterialApp(
           title: 'LAS Customer Application',
