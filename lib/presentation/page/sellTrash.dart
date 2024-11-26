@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:las_customer/data/model/trash.dart';
+import 'package:las_customer/presentation/bloc/sell_trash/sell_trash_bloc.dart';
 import 'package:las_customer/presentation/widget/orders/order_card.dart';
-import 'package:las_customer/presentation/widget/orders/panel/order_panel.dart';
 import 'package:las_customer/presentation/widget/orders/pick_location.dart';
-import 'package:las_customer/presentation/widget/orders/show_ringkasan_angkutan.dart';
+import 'package:las_customer/presentation/widget/orders/select_payment_method.dart';
 
 class SellTrashPage extends StatefulWidget {
   @override
@@ -10,7 +12,16 @@ class SellTrashPage extends StatefulWidget {
 }
 
 class _SellTrashPageState extends State<SellTrashPage> {
-  bool isSelectTrashPanelOpen = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _fetchTrashes();
+  }
+
+  void _fetchTrashes() async {
+    context.read<SellTrashBloc>().add(FetchTrashTypes());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,115 +34,52 @@ class _SellTrashPageState extends State<SellTrashPage> {
         children: [
           Container(
             padding: EdgeInsets.all(20),
-            child: Column(
-              children: [
-                PickLocation(),
-                SizedBox(
-                  height: 20,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            //add top left border radius
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10),
-                              ),
-                            ),
-                            padding: EdgeInsets.all(10),
-                            child: Text('Jenis Sampah'),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  PickLocation(),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  SelectPaymentMethod(onTap: () {}),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  BlocBuilder<SellTrashBloc, SellTrashState>(
+                    builder: (context, state) {
+                      if (state is SellTrashLoading) {
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (state is SellTrashLoaded) {
+                        return OrderCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: _buildOptions(state.trashes),
                           ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                            ),
-                            padding: EdgeInsets.all(10),
-                            child: Text('Berat Sampah'),
+                        );
+                      } else if (state is SellTrashSelected) {
+                        return OrderCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: _buildOptions(state.trashes),
                           ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(10),
-                            //add top right border radius
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(10)),
-                            ),
-                            child: const Text('Harga Sampah'),
-                          ),
-                        )
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: GestureDetector(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                              ),
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                'PET Botol',
-                                maxLines: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                              ),
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                '1 Kg',
-                                maxLines: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: GestureDetector(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Colors.grey),
-                              ),
-                              padding: EdgeInsets.all(10),
-                              child: Text(
-                                'Rp. 8.000',
-                                maxLines: 1,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    //button add trash
-                    ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          isSelectTrashPanelOpen = true;
-                        });
-                      },
-                      child: Icon(Icons.add),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    ShowRingkasanAngkutan(),
-                  ],
-                )
-              ],
+                        );
+                      } else if (state is SellTrashError) {
+                        return Center(
+                          child: Text(state.message),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    },
+                  ),
+                  SizedBox(
+                    height: 80,
+                  ),
+                ],
+              ),
             ),
           ),
           Positioned(
@@ -152,256 +100,110 @@ class _SellTrashPageState extends State<SellTrashPage> {
               ),
             ),
           ),
-
-          //select trash panel
-          if (isSelectTrashPanelOpen) _buildSelectTrashPanel(),
         ],
       ),
     );
   }
 
-  Widget _buildSelectTrashPanel() {
-    return OrderPanel(
-      heightRatio: 0.8,
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+  List<Widget> _buildOptions(List<Trash> trashes) {
+    String prevType = '';
+    return trashes.map((e) {
+      if (prevType != e.trashType) {
+        prevType = e.trashType!;
+        return Container(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                e.trashType!,
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineMedium!
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              Container(
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(e.subTrashType! + '/' + e.unitOfMeasurement!),
+                        Text('Rp. ' + e.priceForMember.toString()),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.remove),
+                          onPressed: () {
+                            context
+                                .read<SellTrashBloc>()
+                                .add(UpdateQty(trashes, e, -1));
+                          },
+                        ),
+                        Text('0'),
+                        IconButton(
+                          icon: Icon(Icons.add),
+                          onPressed: () {
+                            context
+                                .read<SellTrashBloc>()
+                                .add(UpdateQty(trashes, e, 1));
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      } else
+        return Column(
           children: [
-            //close button
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Sampah Plastik',
-                  style: Theme.of(context)
-                      .textTheme
-                      .headlineLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      isSelectTrashPanelOpen = false;
-                    });
-                  },
-                  icon: Icon(Icons.close),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            //list view sampah-sampah plastik
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return Padding(
-                  padding: EdgeInsets.only(top: 5),
-                  child: OrderCard(
-                      child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Container(
+              padding: EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(Icons.shopping_bag_rounded),
-                      Text('Gelas minuman bening'),
-                      Row(
-                        children: [
-                          //increment and decrement
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.remove),
-                          ),
-                          Text('1 Kg'),
-                          IconButton(
-                            onPressed: () {},
-                            icon: Icon(Icons.add),
-                          ),
-                        ],
-                      )
-                    ],
-                  )),
-                );
-              },
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Text(
-              'Sampah Kertas',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            //list view sampah-sampah plastik
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return OrderCard(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('PET Botol'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('1 Kg'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('Rp. 8.000'),
-                        ),
-                      ),
+                      Text(e.subTrashType! + '/' + e.unitOfMeasurement!),
+                      Text('Rp. ' + e.priceForMember.toString()),
                     ],
                   ),
-                );
-              },
-            ),
-
-            Text(
-              'Sampah Logam',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            //list view sampah-sampah plastik
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return OrderCard(
-                  child: Row(
+                  Row(
                     children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('PET Botol'),
-                        ),
+                      IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: () {
+                          context
+                              .read<SellTrashBloc>()
+                              .add(UpdateQty(trashes, e, -1));
+                        },
                       ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('1 Kg'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('Rp. 8.000'),
-                        ),
+                      Text('0'),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: () {
+                          context
+                              .read<SellTrashBloc>()
+                              .add(UpdateQty(trashes, e, 1));
+                        },
                       ),
                     ],
-                  ),
-                );
-              },
-            ),
-
-            Text(
-              'Sampah Kaca',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            //list view sampah-sampah plastik
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return OrderCard(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('PET Botol'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('1 Kg'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('Rp. 8.000'),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-
-            Text(
-              'Sampah Lainnya',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            //list view sampah-sampah plastik
-            ListView.builder(
-              physics: NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return OrderCard(
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('PET Botol'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('1 Kg'),
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.all(10),
-                          child: Text('Rp. 8.000'),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
+                  )
+                ],
+              ),
+            )
           ],
-        ),
-      ),
-    );
+        );
+    }).toList();
   }
 }

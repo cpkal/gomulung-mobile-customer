@@ -8,3 +8,14 @@ sealed class SellTrashEvent extends Equatable {
 }
 
 class FetchTrashTypes extends SellTrashEvent {}
+
+class UpdateQty extends SellTrashEvent {
+  final List<Trash> trashes;
+  final Trash trash;
+  final int qty;
+
+  const UpdateQty(this.trashes, this.trash, this.qty);
+
+  @override
+  List<Object> get props => [trashes, trash, qty];
+}

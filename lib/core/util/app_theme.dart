@@ -55,6 +55,10 @@ ThemeData appTheme() {
       //smaller padding
       contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
     ),
+    dropdownMenuTheme: DropdownMenuThemeData(
+        menuStyle: MenuStyle(
+      backgroundColor: MaterialStateProperty.all(Colors.white),
+    )),
     iconTheme: IconThemeData(
       color: Color(0xFF285238),
     ),

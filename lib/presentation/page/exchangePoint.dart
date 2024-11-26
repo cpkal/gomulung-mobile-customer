@@ -25,9 +25,7 @@ class ExchangePointPage extends StatelessWidget {
                         .headlineLarge
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+
                   Text('Poin Anda: 1000'),
                   SizedBox(
                     height: 20,
@@ -41,9 +39,81 @@ class ExchangePointPage extends StatelessWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  TextField(
+                  // dropdown buttons for bank options
+                  DropdownButtonFormField(
+                    borderRadius: BorderRadius.circular(10),
+                    items: [
+                      DropdownMenuItem(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Text('Bank BCA'),
+                        ),
+                        value: 'bca',
+                      ),
+                      DropdownMenuItem(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Text('Bank Mandiri'),
+                        ),
+                        value: 'mandiri',
+                      ),
+                      DropdownMenuItem(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Text('Bank BNI'),
+                        ),
+                        value: 'bni',
+                      ),
+                      DropdownMenuItem(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Text('Bank BRI'),
+                        ),
+                        value: 'bri',
+                      ),
+                      DropdownMenuItem(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Text('OVO'),
+                        ),
+                        value: 'ovo',
+                      ),
+                      DropdownMenuItem(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Text('DANA'),
+                        ),
+                        value: 'dana',
+                      ),
+                      DropdownMenuItem(
+                        child: Container(
+                          padding: EdgeInsets.all(20),
+                          child: Text('GoPay'),
+                        ),
+                        value: 'gopay',
+                      ),
+                    ],
+                    onChanged: (value) {
+                      print(value);
+                    },
                     decoration: InputDecoration(
                       labelText: 'Bank Tujuan',
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Atas Nama',
+                    ),
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Nomor Rekening / Nomor Handphone',
                     ),
                   ),
                 ],

@@ -11,11 +11,31 @@ final class SellTrashInitial extends SellTrashState {}
 
 final class SellTrashLoading extends SellTrashState {}
 
-// final class SellTrashLoaded extends SellTrashState {
-//   final List<TrashType> trashTypes;
+final class SellTrashLoaded extends SellTrashState {
+  final List<Trash> trashes;
 
-//   const SellTrashLoaded(this.trashTypes);
+  const SellTrashLoaded(this.trashes);
 
-//   @override
-//   List<Object> get props => [trashTypes];
-// }
+  @override
+  List<Object> get props => [trashes];
+}
+
+final class SellTrashError extends SellTrashState {
+  final String message;
+
+  const SellTrashError(this.message);
+
+  @override
+  List<Object> get props => [message];
+}
+
+final class SellTrashSelected extends SellTrashState {
+  final List<Trash> trashes;
+  final Trash trash;
+  final int qty;
+
+  const SellTrashSelected(this.trashes, this.trash, [this.qty = 0]);
+
+  @override
+  List<Object> get props => [trashes, trash, qty];
+}

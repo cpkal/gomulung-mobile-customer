@@ -5,7 +5,6 @@ import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/core/util/app_theme.dart';
 import 'package:las_customer/core/util/secure_storage.dart';
 import 'package:las_customer/data/datasource/remote/api_service.dart';
-import 'package:las_customer/data/datasource/remote/web_socket_service.dart';
 import 'package:las_customer/data/repository/authentication_repository.dart';
 import 'package:las_customer/data/repository/user.dart';
 import 'package:las_customer/presentation/bloc/change_password/change_password_bloc.dart';
@@ -14,9 +13,7 @@ import 'package:las_customer/presentation/bloc/login/login_bloc.dart';
 import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/register/register_bloc.dart';
-import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
-import 'package:las_customer/presentation/page/ask_login_register.dart';
-import 'package:las_customer/presentation/page/sub_root.dart';
+import 'package:las_customer/presentation/bloc/sell_trash/sell_trash_bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -95,9 +92,11 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => MapBloc()),
           BlocProvider(create: (context) => OrderBloc()),
           BlocProvider(create: (context) => CrewBloc()),
-          BlocProvider(create: (context) => ChangePasswordBloc())
+          BlocProvider(create: (context) => ChangePasswordBloc()),
+          BlocProvider(create: (context) => SellTrashBloc())
         ],
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'LAS Customer Application',
           theme: appTheme(),
           initialRoute: isAuthenticated
