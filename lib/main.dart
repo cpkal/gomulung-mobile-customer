@@ -12,6 +12,7 @@ import 'package:las_customer/presentation/bloc/crew/crew_bloc.dart';
 import 'package:las_customer/presentation/bloc/login/login_bloc.dart';
 import 'package:las_customer/presentation/bloc/map/map_bloc.dart';
 import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
+import 'package:las_customer/presentation/bloc/point/point_bloc.dart';
 import 'package:las_customer/presentation/bloc/register/register_bloc.dart';
 import 'package:las_customer/presentation/bloc/sell_trash/sell_trash_bloc.dart';
 
@@ -93,7 +94,8 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(create: (context) => OrderBloc()),
           BlocProvider(create: (context) => CrewBloc()),
           BlocProvider(create: (context) => ChangePasswordBloc()),
-          BlocProvider(create: (context) => SellTrashBloc())
+          BlocProvider(create: (context) => SellTrashBloc()),
+          BlocProvider(create: (context) => PointBloc())
         ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
