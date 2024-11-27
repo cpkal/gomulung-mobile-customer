@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:las_customer/data/model/trash.dart';
+import 'package:las_customer/data/model/cartItem.dart';
 import 'package:las_customer/presentation/bloc/sell_trash/sell_trash_bloc.dart';
 import 'package:las_customer/presentation/widget/orders/order_card.dart';
 import 'package:las_customer/presentation/widget/orders/pick_location.dart';
-import 'package:las_customer/presentation/widget/orders/select_payment_method.dart';
 
 class SellTrashPage extends StatefulWidget {
   @override
@@ -42,36 +41,19 @@ class _SellTrashPageState extends State<SellTrashPage> {
                   SizedBox(
                     height: 20,
                   ),
-                  SelectPaymentMethod(onTap: () {}),
-                  SizedBox(
-                    height: 20,
-                  ),
                   BlocBuilder<SellTrashBloc, SellTrashState>(
                     builder: (context, state) {
-                      if (state is SellTrashLoading) {
+                      if (state.loading == true) {
                         return Center(
                           child: CircularProgressIndicator(),
                         );
-                      } else if (state is SellTrashLoaded) {
-                        return OrderCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: _buildOptions(state.trashes),
-                          ),
-                        );
-                      } else if (state is SellTrashSelected) {
-                        return OrderCard(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: _buildOptions(state.trashes),
-                          ),
-                        );
-                      } else if (state is SellTrashError) {
-                        return Center(
-                          child: Text(state.message),
-                        );
                       } else {
-                        return Container();
+                        return OrderCard(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: _buildOptions(state.cartItems ?? []),
+                          ),
+                        );
                       }
                     },
                   ),
@@ -95,7 +77,15 @@ class _SellTrashPageState extends State<SellTrashPage> {
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [Text('Rp. 8.000'), Text('|'), Text('Jual')],
+                      children: [
+                        BlocBuilder<SellTrashBloc, SellTrashState>(
+                          builder: (context, state) {
+                            return Text('Rp.' + state.totalPrice.toString());
+                          },
+                        ),
+                        Text('|'),
+                        Text('Jual')
+                      ],
                     )),
               ),
             ),
@@ -105,11 +95,12 @@ class _SellTrashPageState extends State<SellTrashPage> {
     );
   }
 
-  List<Widget> _buildOptions(List<Trash> trashes) {
+  List<Widget> _buildOptions(List<CartItem>? cartItems) {
     String prevType = '';
-    return trashes.map((e) {
-      if (prevType != e.trashType) {
-        prevType = e.trashType!;
+    print(context.read<SellTrashBloc>().state.totalPrice.toString());
+    return cartItems!.map((e) {
+      if (prevType != e.trash.trashType) {
+        prevType = e.trash.trashType!;
         return Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,7 +109,7 @@ class _SellTrashPageState extends State<SellTrashPage> {
                 height: 10,
               ),
               Text(
-                e.trashType!,
+                e.trash.trashType!,
                 style: Theme.of(context)
                     .textTheme
                     .headlineMedium!
@@ -132,8 +123,10 @@ class _SellTrashPageState extends State<SellTrashPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(e.subTrashType! + '/' + e.unitOfMeasurement!),
-                        Text('Rp. ' + e.priceForMember.toString()),
+                        Text(e.trash.subTrashType! +
+                            '/' +
+                            e.trash.unitOfMeasurement!),
+                        Text('Rp. ' + e.trash.priceForMember.toString()),
                       ],
                     ),
                     Row(
@@ -141,18 +134,44 @@ class _SellTrashPageState extends State<SellTrashPage> {
                         IconButton(
                           icon: Icon(Icons.remove),
                           onPressed: () {
-                            context
-                                .read<SellTrashBloc>()
-                                .add(UpdateQty(trashes, e, -1));
+                            context.read<SellTrashBloc>().add(
+                                  UpdateQty(
+                                      e.trash,
+                                      context
+                                              .read<SellTrashBloc>()
+                                              .state
+                                              .cartItems!
+                                              .firstWhere((element) =>
+                                                  element.trash.id ==
+                                                  e.trash.id)
+                                              .quantity! -
+                                          1),
+                                );
                           },
                         ),
-                        Text('0'),
+                        Text(
+                          context
+                              .read<SellTrashBloc>()
+                              .state
+                              .cartItems!
+                              .firstWhere(
+                                  (element) => element.trash.id == e.trash.id)
+                              .quantity
+                              .toString(),
+                        ),
                         IconButton(
                           icon: Icon(Icons.add),
                           onPressed: () {
-                            context
-                                .read<SellTrashBloc>()
-                                .add(UpdateQty(trashes, e, 1));
+                            context.read<SellTrashBloc>().add(UpdateQty(
+                                e.trash,
+                                context
+                                        .read<SellTrashBloc>()
+                                        .state
+                                        .cartItems!
+                                        .firstWhere((element) =>
+                                            element.trash.id == e.trash.id)
+                                        .quantity! +
+                                    1));
                           },
                         ),
                       ],
@@ -174,8 +193,10 @@ class _SellTrashPageState extends State<SellTrashPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(e.subTrashType! + '/' + e.unitOfMeasurement!),
-                      Text('Rp. ' + e.priceForMember.toString()),
+                      Text(e.trash.subTrashType! +
+                          '/' +
+                          e.trash.unitOfMeasurement!),
+                      Text('Rp. ' + e.trash.priceForMember.toString()),
                     ],
                   ),
                   Row(
@@ -183,18 +204,41 @@ class _SellTrashPageState extends State<SellTrashPage> {
                       IconButton(
                         icon: Icon(Icons.remove),
                         onPressed: () {
-                          context
-                              .read<SellTrashBloc>()
-                              .add(UpdateQty(trashes, e, -1));
+                          context.read<SellTrashBloc>().add(UpdateQty(
+                              e.trash,
+                              context
+                                      .read<SellTrashBloc>()
+                                      .state
+                                      .cartItems!
+                                      .firstWhere((element) =>
+                                          element.trash.id == e.trash.id)
+                                      .quantity! -
+                                  1));
                         },
                       ),
-                      Text('0'),
+                      Text(
+                        context
+                            .read<SellTrashBloc>()
+                            .state
+                            .cartItems!
+                            .firstWhere(
+                                (element) => element.trash.id == e.trash.id)
+                            .quantity
+                            .toString(),
+                      ),
                       IconButton(
                         icon: Icon(Icons.add),
                         onPressed: () {
-                          context
-                              .read<SellTrashBloc>()
-                              .add(UpdateQty(trashes, e, 1));
+                          context.read<SellTrashBloc>().add(UpdateQty(
+                              e.trash,
+                              context
+                                      .read<SellTrashBloc>()
+                                      .state
+                                      .cartItems!
+                                      .firstWhere((element) =>
+                                          element.trash.id == e.trash.id)
+                                      .quantity! +
+                                  1));
                         },
                       ),
                     ],

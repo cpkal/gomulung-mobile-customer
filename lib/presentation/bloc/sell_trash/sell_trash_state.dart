@@ -1,41 +1,44 @@
 part of 'sell_trash_bloc.dart';
 
-sealed class SellTrashState extends Equatable {
-  const SellTrashState();
+final class SellTrashState extends Equatable {
+  final List<CartItem>? cartItems;
+  final int? totalPrice;
+  final bool loading;
+
+  const SellTrashState({
+    this.cartItems,
+    this.totalPrice,
+    this.loading = false,
+  });
+
+  // copyWith
+  SellTrashState copyWith({
+    List<CartItem>? cartItems,
+    int? totalPrice,
+    bool? loading,
+  }) {
+    return SellTrashState(
+      cartItems: cartItems ?? this.cartItems,
+      totalPrice: totalPrice ?? this.totalPrice,
+      loading: loading ?? this.loading,
+    );
+  }
 
   @override
-  List<Object> get props => [];
+  List<dynamic> get props => [
+        cartItems,
+        totalPrice,
+        loading,
+      ];
 }
 
 final class SellTrashInitial extends SellTrashState {}
 
-final class SellTrashLoading extends SellTrashState {}
-
-final class SellTrashLoaded extends SellTrashState {
-  final List<Trash> trashes;
-
-  const SellTrashLoaded(this.trashes);
-
-  @override
-  List<Object> get props => [trashes];
-}
-
 final class SellTrashError extends SellTrashState {
   final String message;
 
-  const SellTrashError(this.message);
+  SellTrashError(this.message);
 
   @override
-  List<Object> get props => [message];
-}
-
-final class SellTrashSelected extends SellTrashState {
-  final List<Trash> trashes;
-  final Trash trash;
-  final int qty;
-
-  const SellTrashSelected(this.trashes, this.trash, [this.qty = 0]);
-
-  @override
-  List<Object> get props => [trashes, trash, qty];
+  List<dynamic> get props => [message];
 }
