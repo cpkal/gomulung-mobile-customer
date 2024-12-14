@@ -114,7 +114,7 @@ class LoginPage extends StatelessWidget {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: GestureDetector(
-                        onTap: () => _handleSubmit(context),
+                        // onTap: () => _handleSubmit(context),
                         child: Text(
                           'Lupa password?',
                           style: Theme.of(context)
@@ -132,9 +132,7 @@ class LoginPage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: ElevatedButton(
                 onPressed: () {
-                  context.read<LoginBloc>().add(LoginSubmitted(
-                      emailController.text, passwordController.text));
-                  //push and remove all prev routes
+                  _handleSubmit(context);
                 },
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.8,

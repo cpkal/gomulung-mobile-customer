@@ -56,6 +56,8 @@ class SubmitOrder extends OrderEvent {}
 
 class FetchOrders extends OrderEvent {}
 
+class FetchFinishedOrders extends OrderEvent {}
+
 class UpdateOrderAddress extends OrderEvent {
   final String address;
 

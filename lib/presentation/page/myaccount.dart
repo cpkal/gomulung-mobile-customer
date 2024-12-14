@@ -1,22 +1,51 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/core/util/secure_storage.dart';
+import 'package:las_customer/data/datasource/remote/api_service.dart';
 import 'package:las_customer/presentation/page/change_password.dart';
 import 'package:las_customer/presentation/page/login.dart';
+import 'package:las_customer/presentation/page/order_history.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
-class MyAccountPage extends StatelessWidget {
+class MyAccountPage extends StatefulWidget {
   MyAccountPage({Key? key}) : super(key: key);
 
+  @override
+  _MyAccountPageState createState() => _MyAccountPageState();
+}
+
+class _MyAccountPageState extends State<MyAccountPage> {
   final _secureStorage = SecureStorage();
+  String? name;
+  String? email;
 
   Future<void> _logout(BuildContext context) async {
     // await context.read<AuthBloc>().add(AuthLogoutRequested());
     await _secureStorage.deleteSecureData(key: 'token');
 
-    Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (context) => LoginPage()),
-        (Route<dynamic> route) => false);
+    //exit app
+    SystemNavigator.pop();
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getUserData();
+  }
+
+  void _getUserData() async {
+    // http call to get user data
+    final res = await ApiService.fetchData('/users');
+    final decoded = jsonDecode(res.body);
+
+    setState(() {
+      name = decoded['name'];
+      email = decoded['email'];
+    });
   }
 
   @override
@@ -31,7 +60,16 @@ class MyAccountPage extends StatelessWidget {
               child: Row(
                 children: [
                   CircleAvatar(
+                    backgroundColor: Colors.white,
                     radius: 30,
+                    child: ClipOval(
+                      child: Image.network(
+                        'https://cdn-icons-png.flaticon.com/512/1144/1144760.png',
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
                   SizedBox(
                     width: 10,
@@ -39,8 +77,20 @@ class MyAccountPage extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('John Doe'),
-                      Text('john.doe@example.com'),
+                      Text(
+                        name ?? 'John Doe',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        email ?? 'johndoe@mail.com',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   )
                 ],
@@ -79,15 +129,13 @@ class MyAccountPage extends StatelessWidget {
                     child: Container(
                         padding: EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          // border: Border.all(color: Colors.grey),
+                          // color: Theme.of(context).primaryColor,
+                          border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Center(
                           child: Text(
                             'Ganti password',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onPrimary),
                           ),
                         )),
                   ),
@@ -95,19 +143,20 @@ class MyAccountPage extends StatelessWidget {
                     height: 20,
                   ),
                   InkWell(
-                    onTap: () {},
+                    onTap: () {
+                      PersistentNavBarNavigator.pushNewScreen(context,
+                          screen: OrderHistoryPage());
+                    },
                     child: Container(
                         padding: EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
-                          // border: Border.all(color: Colors.grey),
+                          // color: Theme.of(context).primaryColor,
+                          border: Border.all(color: Colors.grey),
                           borderRadius: BorderRadius.circular(100),
                         ),
                         child: Center(
                           child: Text(
                             'Histori Pesanan',
-                            style: TextStyle(
-                                color: Theme.of(context).colorScheme.onPrimary),
                           ),
                         )),
                   ),

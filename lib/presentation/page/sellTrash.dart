@@ -97,7 +97,6 @@ class _SellTrashPageState extends State<SellTrashPage> {
 
   List<Widget> _buildOptions(List<CartItem>? cartItems) {
     String prevType = '';
-    print(context.read<SellTrashBloc>().state.totalPrice.toString());
     return cartItems!.map((e) {
       if (prevType != e.trash.trashType) {
         prevType = e.trash.trashType!;

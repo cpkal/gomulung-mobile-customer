@@ -4,7 +4,7 @@ import 'package:las_customer/presentation/bloc/point/point_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:las_customer/presentation/page/exchangePoint.dart';
 import 'package:las_customer/presentation/page/order.dart';
-import 'package:las_customer/presentation/page/sellTrash.dart';
+import 'package:las_customer/presentation/page/sell_trash.dart';
 import 'package:las_customer/presentation/widget/home/articleCard.dart';
 import 'package:las_customer/presentation/widget/home/carousel.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
@@ -112,18 +112,27 @@ class _HomePageState extends State<HomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      PersistentNavBarNavigator.pushNewScreen(
-                        context,
-                        screen: SellTrashPage(),
-                        withNavBar: false,
+                      // PersistentNavBarNavigator.pushNewScreen(
+                      //   context,
+                      //   screen: SellTrashPage(),
+                      //   withNavBar: false,
+                      // );
+
+                      // coming soon scaffold
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Feature coming soon!'),
+                        ),
                       );
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Colors.blue,
-                      ),
+                          borderRadius: BorderRadius.circular(15),
+                          color: Colors.blue.withOpacity(0.4)
+                          // add transparent color
+
+                          ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -167,7 +176,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           SizedBox(height: 8),
                           Text(
-                            'TUKAR POIN',
+                            'POIN',
                             style: TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
@@ -189,13 +198,27 @@ class _HomePageState extends State<HomePage> {
               SizedBox(height: 20),
               //scrollable grid horizontal
               Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: Colors.white,
+                ),
                 height: 200,
                 child: ListView(
                   scrollDirection: Axis.horizontal,
                   children: [
-                    ArticleCard(),
-                    ArticleCard(),
-                    ArticleCard(),
+                    ArticleCard(
+                      imageUrl:
+                          'https://www.shutterstock.com/image-vector/4-types-trash-dispose-wheelie-260nw-1915169338.jpg',
+                      title: 'Cara memilah sampah dengan benar',
+                      excerpt:
+                          'Memilah sampah dengan benar akan memudahkan proses daur ulang',
+                    ),
+                    ArticleCard(
+                      imageUrl:
+                          'https://dlh.semarangkota.go.id/wp-content/uploads/2021/02/Bank-sampah-image-nu.or_.id.jpg',
+                      title: 'Manfaat Bank Sampah',
+                      excerpt: 'Bank sampah membantu mengurangi sampah plastik',
+                    ),
                   ],
                 ),
               ),

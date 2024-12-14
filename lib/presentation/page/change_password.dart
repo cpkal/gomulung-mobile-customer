@@ -18,8 +18,16 @@ class ChangePasswordPage extends StatelessWidget {
       body: BlocConsumer<ChangePasswordBloc, ChangePasswordState>(
         listener: (context, state) {
           if (state is ChangePasswordSuccess) {
-            // pop
-            Navigator.pop(context);
+            // show snackbar
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Password berhasil diubah'),
+              ),
+            );
+            //wait 2 seconds and pop
+            Future.delayed(Duration(seconds: 2), () {
+              Navigator.pop(context);
+            });
           }
         },
         builder: (context, state) {

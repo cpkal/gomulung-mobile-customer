@@ -3,6 +3,16 @@ import 'package:las_customer/presentation/page/article.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 
 class ArticleCard extends StatelessWidget {
+  String imageUrl;
+  String title;
+  String excerpt;
+  ArticleCard({
+    // required Key key,
+    required this.imageUrl,
+    required this.title,
+    required this.excerpt,
+  });
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -18,8 +28,12 @@ class ArticleCard extends StatelessWidget {
         width: 200,
         margin: EdgeInsets.only(right: 20),
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          // color: Colors.grey[200],
           borderRadius: BorderRadius.circular(15),
+          border: Border.all(
+            color: Colors.grey[300]!,
+            width: 1,
+          ),
         ),
         child: Column(
           children: [
@@ -39,7 +53,7 @@ class ArticleCard extends StatelessWidget {
                     topRight: Radius.circular(15),
                   ),
                   child: Image.network(
-                    'https://pendowoharjo.bantulkab.go.id/assets/files/artikel/sedang_1654009631IMG20220531WA0014.jpg',
+                    imageUrl,
                     fit: BoxFit.cover,
                   ),
                 )),
@@ -49,18 +63,20 @@ class ArticleCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Cara memilah sampah dengan benar',
-                    maxLines: 2,
+                    title,
+                    maxLines: 1,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Text(
-                    'Memilah sampah dengan benar akan memudahkan proses daur ulang',
+                    excerpt,
                     style: TextStyle(
                       color: Colors.grey,
                     ),
                     maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),

@@ -4,6 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:las_customer/core/util/secure_storage.dart';
 
 class ApiService {
+  // static String _baseUrl =
+  //     'https://gomulung-backend-production.up.railway.app/api/v1';
+
+  // android emulator
   static String _baseUrl = 'http://10.0.2.2:3000/api/v1';
   static final SecureStorage _secureStorage = SecureStorage();
 

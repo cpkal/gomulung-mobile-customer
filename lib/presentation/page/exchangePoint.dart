@@ -12,6 +12,18 @@ class ExchangePointPage extends StatelessWidget {
   TextEditingController atasNamaController = TextEditingController();
   TextEditingController noRekController = TextEditingController();
 
+  // formkey
+  final _formKey = GlobalKey<FormState>();
+
+  void _submitForm(BuildContext context) {
+    if (_formKey.currentState!.validate()) {
+      context.read<PointBloc>().add(
+            ConvertPoint(int.parse(pointController.text), bank,
+                atasNamaController.text, noRekController.text),
+          );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
@@ -29,117 +41,128 @@ class ExchangePointPage extends StatelessWidget {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text('Berhasil tukar poin'),
               ));
+
+              // wait two seconds and then pop context
+              Future.delayed(Duration(seconds: 2), () {
+                Navigator.pop(context);
+              });
             }
           },
           child: Stack(
             children: [
               Container(
                 padding: EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Tukar Poin',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineLarge
-                          ?.copyWith(fontWeight: FontWeight.bold),
-                    ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tukar Poin',
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
 
-                    Text('Poin Anda: 1000'),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      controller: pointController,
-                      decoration: InputDecoration(
-                        labelText: 'Jumlah Poin',
+                      Text('Poin Anda: 1000'),
+                      SizedBox(
+                        height: 20,
                       ),
-                    ),
-                    // bank tujuan
-                    SizedBox(
-                      height: 20,
-                    ),
-                    // dropdown buttons for bank options
-                    DropdownButtonFormField(
-                      borderRadius: BorderRadius.circular(10),
-                      items: [
-                        DropdownMenuItem(
-                          child: Container(
-                            padding: EdgeInsets.all(20),
+                      TextFormField(
+                        controller: pointController,
+                        decoration: InputDecoration(
+                          labelText: 'Jumlah Poin',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Jumlah poin tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                      // bank tujuan
+                      SizedBox(
+                        height: 20,
+                      ),
+                      // dropdown buttons for bank options
+                      DropdownButtonFormField(
+                        borderRadius: BorderRadius.circular(10),
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Bank tujuan tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                        items: [
+                          DropdownMenuItem(
                             child: Text('Bank BCA'),
+                            value: 'bca',
                           ),
-                          value: 'bca',
-                        ),
-                        DropdownMenuItem(
-                          child: Container(
-                            padding: EdgeInsets.all(20),
+                          DropdownMenuItem(
                             child: Text('Bank Mandiri'),
+                            value: 'mandiri',
                           ),
-                          value: 'mandiri',
-                        ),
-                        DropdownMenuItem(
-                          child: Container(
-                            padding: EdgeInsets.all(20),
+                          DropdownMenuItem(
                             child: Text('Bank BNI'),
+                            value: 'bni',
                           ),
-                          value: 'bni',
-                        ),
-                        DropdownMenuItem(
-                          child: Container(
-                            padding: EdgeInsets.all(20),
+                          DropdownMenuItem(
                             child: Text('Bank BRI'),
+                            value: 'bri',
                           ),
-                          value: 'bri',
-                        ),
-                        DropdownMenuItem(
-                          child: Container(
-                            padding: EdgeInsets.all(20),
+                          DropdownMenuItem(
                             child: Text('OVO'),
+                            value: 'ovo',
                           ),
-                          value: 'ovo',
-                        ),
-                        DropdownMenuItem(
-                          child: Container(
-                            padding: EdgeInsets.all(20),
+                          DropdownMenuItem(
                             child: Text('DANA'),
+                            value: 'dana',
                           ),
-                          value: 'dana',
-                        ),
-                        DropdownMenuItem(
-                          child: Container(
-                            padding: EdgeInsets.all(20),
+                          DropdownMenuItem(
                             child: Text('GoPay'),
+                            value: 'gopay',
                           ),
-                          value: 'gopay',
+                        ],
+                        onChanged: (value) {
+                          bank = value.toString();
+                        },
+                        decoration: InputDecoration(
+                          labelText: 'Bank Tujuan',
                         ),
-                      ],
-                      onChanged: (value) {
-                        bank = value.toString();
-                      },
-                      decoration: InputDecoration(
-                        labelText: 'Bank Tujuan',
                       ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      controller: atasNamaController,
-                      decoration: InputDecoration(
-                        labelText: 'Atas Nama',
+                      SizedBox(
+                        height: 20,
                       ),
-                    ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
-                      controller: noRekController,
-                      decoration: InputDecoration(
-                        labelText: 'Nomor Rekening / Nomor Handphone',
+                      TextFormField(
+                        controller: atasNamaController,
+                        decoration: InputDecoration(
+                          labelText: 'Atas Nama',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Atas nama tidak boleh kosong';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
-                  ],
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                        controller: noRekController,
+                        decoration: InputDecoration(
+                          labelText: 'Nomor Rekening / Nomor Handphone',
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Nomor rekening tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Positioned(
@@ -151,10 +174,7 @@ class ExchangePointPage extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: ElevatedButton(
                     onPressed: () {
-                      context.read<PointBloc>().add(
-                            ConvertPoint(int.parse(pointController.text), bank,
-                                atasNamaController.text, noRekController.text),
-                          );
+                      _submitForm(context);
                     },
                     child: SizedBox(
                         width: MediaQuery.of(context).size.width * 0.8,

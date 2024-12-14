@@ -20,7 +20,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
       final isButtonEnabled = _shouldEnableButton(
         trashType: state.trash_type,
         weightType: state.weight_type,
-        location: state.position.toString(),
+        location: event.position,
       );
 
       emit(state.copyWith(
@@ -34,9 +34,11 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<SelectWeightType>((event, emit) {
       final isButtonEnabled = _shouldEnableButton(
         trashType: state.trash_type,
-        weightType: state.weight_type,
-        location: state.position.toString(),
+        weightType: event.weightType,
+        location: state.position,
       );
+
+      print(isButtonEnabled);
 
       emit(state.copyWith(
           weight_type: event.weightType, is_button_enabled: isButtonEnabled));
@@ -52,9 +54,9 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     on<SelectTrashType>((event, emit) {
       final isButtonEnabled = _shouldEnableButton(
-        trashType: state.trash_type,
+        trashType: event.trashType,
         weightType: state.weight_type,
-        location: state.position.toString(),
+        location: state.position,
       );
 
       emit(state.copyWith(
@@ -76,6 +78,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     });
 
     on<SubmitOrder>(_onOrderSubmitted);
+    on<FetchFinishedOrders>(_onFetchFinishedOrders);
     on<FetchOrders>(_onFetchOrders);
     on<OrderCanceled>(_onOrderCanceled);
     on<OrderFetchWeightTypes>(_onFetchWeightTypse);
@@ -179,7 +182,29 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   }
 
   bool _shouldEnableButton(
-      {String? trashType, String? weightType, String? location}) {
+      {String? trashType, String? weightType, LatLng? location}) {
+    print(trashType);
+    print(weightType);
+    print(location);
+
     return trashType != '' && weightType != '' && location != null;
+  }
+
+  void _onFetchFinishedOrders(
+    FetchFinishedOrders event,
+    Emitter<OrderState> emit,
+  ) async {
+    await ApiService.fetchData('/orders/finished/get').then((res) {
+      final orders = jsonDecode(res.body) as List;
+
+      if (orders.isEmpty) {
+        emit(OrdersEmpty());
+        return;
+      }
+
+      emit(OrdersLoaded(orders.map((e) => OrderPayment.fromJson(e)).toList()));
+    }).catchError((err) {
+      emit(OrderFailed());
+    });
   }
 }

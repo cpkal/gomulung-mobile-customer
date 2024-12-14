@@ -12,7 +12,7 @@ class OrderPanel extends StatelessWidget {
       bottom: 0,
       child: Container(
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * (heightRatio ?? 0.6),
+        height: MediaQuery.of(context).size.height * (heightRatio ?? 0.75),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           //border radius top right and left top
