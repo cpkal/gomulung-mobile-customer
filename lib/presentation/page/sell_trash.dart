@@ -8,6 +8,7 @@ import 'package:las_customer/presentation/bloc/order/order_bloc.dart';
 import 'package:las_customer/presentation/bloc/websocket/websocket_bloc.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SellTrashPage extends StatefulWidget {
   // Constructor to accept the argument
@@ -22,6 +23,31 @@ class _SellTrashPageState extends State<SellTrashPage> {
   bool _isDragging = false;
   double? _prevLatitude;
   double? _prevLongitude;
+
+  bool toggleMarker = false;
+
+  // current selected marker location
+  double? _selectedLatitude;
+  double? _selectedLongitude;
+
+  //list dropoff locations
+  List<LatLng> dropOffLocations = [
+    LatLng(-6.940363, 107.724643),
+    LatLng(-6.939556, 107.726288),
+    LatLng(-6.937650, 107.726336),
+  ];
+
+  List<String> dropOffLocationNames = [
+    'Jl. Pendidikan',
+    'Jl. Cibiru Indah III',
+    'Jl. Permata 14',
+  ];
+
+  List<String> dropOffLocationDetail = [
+    'Cibiru, Kec. Panyileukan, Kabupaten Bandung, Jawa Barat, Indonesia',
+    'Cibiru, Kec. Panyileukan, Kabupaten Bandung, Jawa Barat, Indonesia',
+    'Cibiru, Kec. Panyileukan, Kabupaten Bandung, Jawa Barat, Indonesia',
+  ];
 
   @override
   void initState() {
@@ -79,8 +105,112 @@ class _SellTrashPageState extends State<SellTrashPage> {
             _prevLongitude = state.position.longitude;
 
             return SlidingUpPanel(
+              minHeight: 100,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
               panel: Container(
-                child: Text('Panel'),
+                padding: EdgeInsets.all(20),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Align content to the left
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      // Title Text
+                      Text(
+                        'Drop-off locations',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                      ),
+
+                      // List of nearby drop-off locations
+                      ListView.builder(
+                        itemCount: dropOffLocations.length,
+                        shrinkWrap: true, // Prevent infinite height
+                        physics:
+                            NeverScrollableScrollPhysics(), // Disable ListView scrolling
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            onTap: () {
+                              // setState(() {
+                              //   toggleMarker = !toggleMarker;
+                              // });
+
+                              setState(() {
+                                // move camera
+                                mapController.move(
+                                    LatLng(dropOffLocations[index].latitude,
+                                        dropOffLocations[index].longitude),
+                                    mapController.camera.zoom);
+                              });
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 6.0), // Add spacing between items
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.location_on,
+                                    color: Colors.green,
+                                    size: 30,
+                                  ),
+                                  SizedBox(
+                                      width:
+                                          8), // Spacing between icon and text
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Text(
+                                              dropOffLocationNames[index],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                            Text(
+                                              '< 1 km',
+                                              style: TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                            height:
+                                                2), // Reduce spacing between rows
+                                        Text(
+                                          dropOffLocationDetail[index],
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            color: Colors.grey[600],
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               ),
               body: Stack(
                 children: [
@@ -93,14 +223,14 @@ class _SellTrashPageState extends State<SellTrashPage> {
                             InteractiveFlag.doubleTapZoom,
                       ),
                       onPositionChanged: (position, hasGesture) {
-                        context.read<MapBloc>().add(
-                              MapPositionChanged(
-                                LatLng(
-                                  position.center.latitude,
-                                  position.center.longitude,
-                                ),
-                              ),
-                            );
+                        // context.read<MapBloc>().add(
+                        //       MapPositionChanged(
+                        //         LatLng(
+                        //           position.center.latitude,
+                        //           position.center.longitude,
+                        //         ),
+                        //       ),
+                        //     );
                       },
                       initialZoom: 18,
                       initialCenter: LatLng(
@@ -113,6 +243,52 @@ class _SellTrashPageState extends State<SellTrashPage> {
                         urlTemplate:
                             'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                         subdomains: const ['a', 'b', 'c'],
+                      ),
+                      MarkerLayer(
+                        markers: dropOffLocations.map((e) {
+                          return Marker(
+                            width: 80.0,
+                            height: 80.0,
+                            point: e,
+                            child: GestureDetector(
+                              onTap: () {
+                                //modal dialog
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return AlertDialog(
+                                      title:
+                                          Text('Navigasi ke titik drop-off?'),
+                                      content: Text(dropOffLocationDetail[
+                                          dropOffLocations.indexOf(e)]),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: Text('Tidak'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            // open google map
+                                            openGoogleMap(
+                                                e.latitude, e.longitude);
+                                          },
+                                          child: Text('Navigasi'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              child: Icon(
+                                Icons.location_on,
+                                color: Colors.green,
+                                size: 30,
+                              ),
+                            ),
+                          );
+                        }).toList(), // Important: Add `.toList()` at the end of `.map()`
                       ),
                     ],
                   ),
@@ -194,122 +370,22 @@ class _SellTrashPageState extends State<SellTrashPage> {
             );
           }
 
-          if (state is MapPositionUpdate) {
-            return Stack(
-              children: [
-                FlutterMap(
-                  mapController: mapController,
-                  options: MapOptions(
-                    interactionOptions: InteractionOptions(
-                      flags: InteractiveFlag.drag |
-                          InteractiveFlag.rotate |
-                          InteractiveFlag.doubleTapZoom,
-                    ),
-                    onPositionChanged: (position, hasGesture) {
-                      if (hasGesture) {
-                        context.read<MapBloc>().add(
-                              MapPositionChanged(
-                                LatLng(
-                                  position.center.latitude,
-                                  position.center.longitude,
-                                ),
-                              ),
-                            );
-
-                        // setState(() {
-                        //   _isDragging = true;
-                        // });
-                      } else {
-                        //call api to get address
-                        // setState(() {
-                        //   _isDragging = false;
-                        // });
-                      }
-                    },
-                    initialZoom: 18,
-                    initialCenter: LatLng(
-                        state.position.latitude, state.position.longitude),
-                  ),
-                  children: [
-                    TileLayer(
-                      urlTemplate:
-                          'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      subdomains: const ['a', 'b', 'c'],
-                    ),
-                    // maker current location
-                    // list of markers
-                  ],
-                ),
-
-                //positioned buttons for zoom in, zoom out, and my location
-                Positioned(
-                  //middle right
-                  right: 10,
-                  top: MediaQuery.of(context).size.height * 0.3,
-                  child: Column(
-                    children: [
-                      Container(
-                        //border grey
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            mapController.move(
-                                LatLng(_prevLatitude!, _prevLongitude!),
-                                mapController.camera.zoom);
-                          },
-                          icon: Icon(Icons.my_location),
-                          padding: EdgeInsets.all(20),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        //border grey
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            mapController.move(
-                                LatLng(state.position.latitude,
-                                    state.position.longitude),
-                                mapController.camera.zoom + 1);
-                          },
-                          icon: Icon(Icons.add),
-                          padding: EdgeInsets.all(20),
-                        ),
-                      ),
-                      SizedBox(height: 10),
-                      Container(
-                        //border grey
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: IconButton(
-                          onPressed: () {
-                            mapController.move(
-                                LatLng(state.position.latitude,
-                                    state.position.longitude),
-                                mapController.camera.zoom - 1);
-                          },
-                          icon: Icon(Icons.remove),
-                          padding: EdgeInsets.all(20),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          }
-
           return Container();
         },
       ),
     );
+  }
+
+  Future<void> openGoogleMap(double lat, double long) async {
+    final googleMapsUrl =
+        "https://www.google.com/maps/dir/?api=1&destination=$lat,$long&travelmode=driving&dir_action=navigate";
+
+    print(googleMapsUrl);
+
+    if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
+      await launchUrl(Uri.parse(googleMapsUrl));
+    } else {
+      throw 'Could not open Google Maps.';
+    }
   }
 }

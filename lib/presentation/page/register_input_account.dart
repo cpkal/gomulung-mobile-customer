@@ -155,14 +155,19 @@ class RegisterInputAccountPage extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20),
-                      child: Text(
-                        'Lupa password?',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: Colors.grey.shade600),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, RoutePaths.login);
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Text(
+                          'Sudah punya akun? Login sekarang',
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: Colors.grey.shade600),
+                        ),
                       ),
                     )
                   ],

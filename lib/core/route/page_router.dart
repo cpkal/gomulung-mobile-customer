@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:las_customer/core/route/route_paths.dart';
-import 'package:las_customer/core/util/secure_storage.dart';
 import 'package:las_customer/presentation/page/ask_login_register.dart';
 import 'package:las_customer/presentation/page/chat.dart';
 import 'package:las_customer/presentation/page/forgot_password.dart';
@@ -37,7 +36,7 @@ class PageRouter {
       case RoutePaths.chat:
         return MaterialPageRoute(builder: (_) => ChatPage());
       case RoutePaths.forgotPassword:
-        return MaterialPageRoute(builder: (_) => ForgotPasswordPage());
+        return MaterialPageRoute(builder: (_) => ForgotPassword());
       case RoutePaths.payNow:
         return MaterialPageRoute(
             builder: (_) => PayNowPage(

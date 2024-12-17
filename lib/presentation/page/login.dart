@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:las_customer/core/route/route_paths.dart';
 import 'package:las_customer/presentation/bloc/login/login_bloc.dart';
+import 'package:las_customer/presentation/page/forgot_password.dart';
 
 class LoginPage extends StatelessWidget {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -115,6 +116,12 @@ class LoginPage extends StatelessWidget {
                       padding: EdgeInsets.symmetric(horizontal: 20),
                       child: GestureDetector(
                         // onTap: () => _handleSubmit(context),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ForgotPassword()));
+                        },
                         child: Text(
                           'Lupa password?',
                           style: Theme.of(context)

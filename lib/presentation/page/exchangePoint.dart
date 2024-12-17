@@ -65,7 +65,6 @@ class ExchangePointPage extends StatelessWidget {
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
 
-                      Text('Poin Anda: 1000'),
                       SizedBox(
                         height: 20,
                       ),

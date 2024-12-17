@@ -52,6 +52,9 @@ dependencies:
   skeletonizer: ^1.4.2
   webview_flutter: ^4.10.0
   intl: ^0.20.1
+  flutter_native_splash: ^2.4.3
+  flutter_launcher_icons: ^0.14.2
+  url_launcher: ^6.3.1
 
 dev_dependencies:
   flutter_test:
@@ -81,6 +84,7 @@ flutter:
     - assets/images/home.png
     - assets/images/factory.jpg
     - assets/images/logo.png
+    - assets/images/icon.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
@@ -107,3 +111,16 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+flutter_native_splash:
+  color: "#ffffff"
+  image: assets/images/logo.png
+  android: true
+  ios: true
+  web: true
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21

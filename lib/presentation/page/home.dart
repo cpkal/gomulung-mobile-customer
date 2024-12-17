@@ -112,27 +112,26 @@ class _HomePageState extends State<HomePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      // PersistentNavBarNavigator.pushNewScreen(
-                      //   context,
-                      //   screen: SellTrashPage(),
-                      //   withNavBar: false,
-                      // );
-
-                      // coming soon scaffold
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Feature coming soon!'),
-                        ),
+                      PersistentNavBarNavigator.pushNewScreen(
+                        context,
+                        screen: SellTrashPage(),
+                        withNavBar: false,
                       );
+
+                      // // coming soon scaffold
+                      // ScaffoldMessenger.of(context).showSnackBar(
+                      //   SnackBar(
+                      //     content: Text('Feature coming soon!'),
+                      //   ),
+                      // );
                     },
                     child: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.blue.withOpacity(0.4)
-                          // add transparent color
-
-                          ),
+                        borderRadius: BorderRadius.circular(15),
+                        color: Colors.blue,
+                        // add transparent color
+                      ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [

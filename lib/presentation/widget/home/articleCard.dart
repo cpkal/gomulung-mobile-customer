@@ -20,7 +20,11 @@ class ArticleCard extends StatelessWidget {
       onTap: () {
         PersistentNavBarNavigator.pushNewScreen(
           context,
-          screen: ArticlePage(),
+          screen: ArticlePage(
+            imageUrl: imageUrl,
+            title: title,
+            excerpt: excerpt,
+          ),
           withNavBar: false,
         );
       },
